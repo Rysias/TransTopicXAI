@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "Reading TODO.md",
+            "file": "BERTopic has more room for growth than LDA.md",
             "mode": "source"
           }
         }
@@ -68,7 +68,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Reading TODO.md",
+                "file": "BERTopic has more room for growth than LDA.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,6 +88,8 @@
   },
   "active": "b51d69269ce5d8b1",
   "lastOpenFiles": [
+    "BERTopic has more room for growth than LDA.md",
+    "LDA would be a good baseline.md",
     "Reading TODO.md",
     "Explanatory models should statistically match base models.md",
     "Adding components adds complexity.md",
