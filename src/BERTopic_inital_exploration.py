@@ -23,17 +23,32 @@ from bertopic import BERTopic
 from sklearn.datasets import fetch_20newsgroups
 
 # Getting the Data #
+print("fetching the data")
 docs = fetch_20newsgroups(subset='test',  remove=('headers', 'footers', 'quotes'))['data']
 docs = random.sample(docs, 1000)
 
+
 # initializing the model #
 # Model choice: fastest model I could find on sentence-transformers
+print("loading model")
 topic_model = BERTopic(embedding_model="paraphrase-MiniLM-L6-v2") 
-topics, probs = topic_model.fit_transform(docs)
-
+print("creating embeddings")
+embeddings = topic_model._extract_embeddings(docs)
+topics, probs = topic_model.fit_transform(docs, embeddings=embeddings)
+print("all done!")
 print(topic_model.get_topic_info())
 
 
-# Getting the centroids #
-embeddings = topic_model._extract_embeddings(docs)
+# Exploring the topic embeddings #
+topic1embedding = topic_model.topic_embeddings[0]
+print(type(topic1embedding)) # numpy array
+topic1embedding.shape
 
+# These embeddings seem to be rather 
+
+# PLAN #
+# - Find a method for extracting the centroids (weighed by probability)
+# 
+
+# Notes: 
+# Which Embedding space should the embeddings be calculated in?
