@@ -12,6 +12,7 @@ The structure of the repo is very much under development. However as of now it l
 
 .
 +-- src (where all the (very exploratory atm) scripts goes)
+
 +-- ThoughtsAndNotes (an [obsidian](https://obsidian.md/) vault with notes and thoughts regarding the project)
 
 Any feedback is much appreciated! :)) 
