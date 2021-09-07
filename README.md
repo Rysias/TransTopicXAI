@@ -10,9 +10,7 @@ Many AI-solutions ultimately end up as decision support for non-technical end us
 ## How is the repo structured? 
 The structure of the repo is very much under development. However as of now it looks something like this: 
 
-.
-+-- src (where all the (very exploratory atm) scripts goes)
-
++-- src (where all the (very exploratory atm) scripts goes) \n
 +-- ThoughtsAndNotes (an [obsidian](https://obsidian.md/) vault with notes and thoughts regarding the project)
 
 Any feedback is much appreciated! :)) 
