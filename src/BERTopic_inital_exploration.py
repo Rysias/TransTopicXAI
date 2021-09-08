@@ -51,4 +51,4 @@ topic1embedding.shape
 # 
 
 # Notes: 
-# Which Embedding space should the embeddings be calculated in?
+# Which Embedding space should the embeddings be calculated in? (probably reduced, but lets experiment with full)

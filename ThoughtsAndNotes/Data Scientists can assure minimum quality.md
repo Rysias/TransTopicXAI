@@ -1,0 +1,1 @@
+Though [[Topic Evaluations depends on Domain Experts]], data scientists are (hopefully) a kind of domain expert in an important domain: general language understanding. This comes from the general experience of being a human, which is pretty neat. 

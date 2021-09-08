@@ -9,7 +9,18 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "Reading TODO.md",
+            "file": "Embeddings has more room for growth than LDA.md",
+            "mode": "source"
+          }
+        }
+      },
+      {
+        "id": "6f4656d089491692",
+        "type": "leaf",
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "Data Scientists can assure minimum quality.md",
             "mode": "source"
           }
         }
@@ -68,7 +79,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Reading TODO.md",
+                "file": "Embeddings has more room for growth than LDA.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -88,14 +99,15 @@
   },
   "active": "b51d69269ce5d8b1",
   "lastOpenFiles": [
-    "Reading TODO.md",
     "BERTopic has more room for growth than LDA.md",
-    "LDA would be a good baseline.md",
-    "Explanatory models should statistically match base models.md",
-    "Adding components adds complexity.md",
-    "Data Pipeline.md",
+    "Long documents are hard to embed.md",
+    "LDA would be a good baseline for topic modelling.md",
+    "Distance should be calculated on low-dimensional embeddings.md",
     "Topic Evaluations depends on Domain Experts.md",
-    "Topic Evaluations are Human Dependent.md",
-    "Untitled.md"
+    "Data Scientists can assure minimum quality.md",
+    "Long documents are hard to manage.md",
+    "Notes for KMD kick-off meeting.md",
+    "Reading TODO.md",
+    "LDA would be a good baseline.md"
   ]
 }
