@@ -6,6 +6,11 @@ import numpy as np
 import pickle
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
+from typing import List
+
+
+def flatten_list(lst: List):
+    return [elem for sublist in lst for elem in sublist]
 
 
 def read_pickle(file_path: Path):
@@ -27,3 +32,10 @@ embedding_dimension = sentence_model.encode("hejsa").shape[0]
 embedding_dict = {doc_id: np.zeros((len(paragraphs), embedding_dimension))
                   for doc_id, paragraphs in resume_dict.items()}
 
+all_paragraphs = flatten_list(list(resume_dict.values()))
+
+all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
+
+current_idx = 0
+for doc_id, emb_array in embedding_dict.items():
+    continue
