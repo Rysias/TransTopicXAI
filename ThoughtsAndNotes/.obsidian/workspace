@@ -9,7 +9,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "Embeddings has more room for growth than LDA.md",
+            "file": "Timeline.md",
             "mode": "source"
           }
         }
@@ -79,7 +79,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Embeddings has more room for growth than LDA.md",
+                "file": "Timeline.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -99,6 +99,8 @@
   },
   "active": "b51d69269ce5d8b1",
   "lastOpenFiles": [
+    "Timeline.md",
+    "Embeddings has more room for growth than LDA.md",
     "BERTopic has more room for growth than LDA.md",
     "Long documents are hard to embed.md",
     "LDA would be a good baseline for topic modelling.md",
@@ -106,8 +108,6 @@
     "Topic Evaluations depends on Domain Experts.md",
     "Data Scientists can assure minimum quality.md",
     "Long documents are hard to manage.md",
-    "Notes for KMD kick-off meeting.md",
-    "Reading TODO.md",
-    "LDA would be a good baseline.md"
+    "Notes for KMD kick-off meeting.md"
   ]
 }
