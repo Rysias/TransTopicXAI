@@ -38,4 +38,6 @@ all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
 
 current_idx = 0
 for doc_id, emb_array in embedding_dict.items():
-    continue
+    stop_idx = current_idx + emb_array.shape[0]
+    embedding_dict[doc_id] += all_embeds[current_idx:stop_idx, :]
+    current_idx += emb_array.shape[0]
