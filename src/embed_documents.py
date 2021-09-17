@@ -49,4 +49,4 @@ for doc_id, emb_array in embedding_dict.items():
     current_idx += emb_array.shape[0]  # Reset to next document
 
 # Writing data to disk
-serialize_data(embedding_dict, DATA_DIR / "embedding_dict")
+serialize_data(embedding_dict, DATA_DIR / "embedding_dict.pkl")
