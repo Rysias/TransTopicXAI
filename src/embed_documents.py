@@ -35,7 +35,6 @@ def remove_stopwords(doc, stop_words):
     """ Removes the stopwords from a spacy doc given a list of stopwords"""
     return " ".join([word.text for word in doc if not word.text.lower() in stop_words])
 
-# TODO: Fix paragraph_dict (add clean data)
 DATA_DIR = Path("../BscThesisData/data")
 data_path = DATA_DIR / "paragraph_dict.pkl"
 resume_dict = read_pickle(data_path)
@@ -57,6 +56,8 @@ danish_nlp = load("da_core_news_sm")
 
 tokenized_paragraphs = danish_nlp.tokenizer.pipe(all_paragraphs)
 clean_paragraphs = [remove_stopwords(doc, stop_words) for doc in tokenized_paragraphs]
+
+serialize_data(clean_paragraphs, DATA_DIR / "clean_paragraphs.pkl")
 
 print("done cleaning paragraphs!")
 # Embedding the documents #
