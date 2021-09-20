@@ -35,7 +35,7 @@ def remove_stopwords(doc, stop_words):
     """ Removes the stopwords from a spacy doc given a list of stopwords"""
     return " ".join([word.text for word in doc if not word.text.lower() in stop_words])
 
-
+# TODO: Fix paragraph_dict (add clean data)
 DATA_DIR = Path("../BscThesisData/data")
 data_path = DATA_DIR / "paragraph_dict.pkl"
 resume_dict = read_pickle(data_path)
