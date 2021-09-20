@@ -48,6 +48,7 @@ embedding_dimension = sentence_model.encode("hejsa").shape[0]
 
 
 # Preprocess embeddings
+print("cleaning paragraphs!")
 all_paragraphs = flatten_list(list(resume_dict.values()))
 stop_word_url = "https://gist.githubusercontent.com/berteltorp/0cf8a0c7afea7f25ed754f24cfc2467b/raw/305d8e3930cc419e909d49d4b489c9773f75b2d6/stopord.txt"
 stop_words = load_text_url(stop_word_url)
@@ -56,7 +57,10 @@ danish_nlp = load("da_core_news_sm")
 
 tokenized_paragraphs = danish_nlp.tokenizer.pipe(all_paragraphs)
 clean_paragraphs = [remove_stopwords(doc, stop_words) for doc in tokenized_paragraphs]
+
+print("done cleaning paragraphs!")
 # Embedding the documents #
+print("Embedding documents!")
 all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
 
 # Add embeddings to dictionary #
@@ -70,5 +74,6 @@ for doc_id, emb_array in embedding_dict.items():
     embedding_dict[doc_id] += all_embeds[current_idx:stop_idx, :]
     current_idx += emb_array.shape[0]  # Reset to next document
 
+print("done with embedding...")
 # Writing data to disk
 serialize_data(embedding_dict, DATA_DIR / "embedding_dict.pkl")
