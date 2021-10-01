@@ -53,7 +53,7 @@ def main(args):
         # Embedding the documents #
         print("Embedding documents!")
         all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
-        embedding_dimension = sentence_model.encode("hejsa").shape[0]
+        embedding_dimension = sentence_model.encode("en").shape[0]
         embedding_dict = create_embedding_dict(resume_dict, all_embeds, embedding_dimension)
 
         print("done with embedding...")
