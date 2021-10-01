@@ -22,12 +22,26 @@ def read_pickle(file_path: Path):
     with open(file_path, "rb") as f:
         return pickle.load(f)
 
+def create_embedding_dict(resume_dict, embeddings, embedding_dimension):
+    # Add embeddings to dictionary #
+    # Creating the output dictionary structure
+    embedding_dict = {doc_id: np.zeros((len(paragraphs), embedding_dimension))
+                    for doc_id, paragraphs in resume_dict.items()}
+
+    current_idx = 0
+    for doc_id, emb_array in embedding_dict.items():
+        stop_idx = current_idx + emb_array.shape[0]  # Makes it stop at the right number of docs
+        embedding_dict[doc_id] += embeddings[current_idx:stop_idx, :]
+        current_idx += emb_array.shape[0]  # Reset to next document
+    return embedding_dict
+
 def main(args):
     DATA_DIR = Path("../BscThesisData/data")
     data_path = DATA_DIR / "paragraph_dict.pkl"
     resume_dict = read_pickle(data_path)
 
     # Powering up the transformer!
+    model_list = ["Maltehb/-l-ctra-danish-electra-small-cased", "saattrupdan/nbailab-base-ner-scandi"]
     sentence_model = SentenceTransformer(
         "Maltehb/-l-ctra-danish-electra-small-cased")
 
@@ -39,16 +53,7 @@ def main(args):
     print("Embedding documents!")
     all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
 
-    # Add embeddings to dictionary #
-    # Creating the output dictionary structure
-    embedding_dict = {doc_id: np.zeros((len(paragraphs), embedding_dimension))
-                    for doc_id, paragraphs in resume_dict.items()}
-
-    current_idx = 0
-    for doc_id, emb_array in embedding_dict.items():
-        stop_idx = current_idx + emb_array.shape[0]  # Makes it stop at the right number of docs
-        embedding_dict[doc_id] += all_embeds[current_idx:stop_idx, :]
-        current_idx += emb_array.shape[0]  # Reset to next document
+    embedding_dict = create_embedding_dict(resume_dict, all_embeds, embedding_dimension)
 
     print("done with embedding...")
     # Writing data to disk
