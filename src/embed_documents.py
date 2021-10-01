@@ -4,11 +4,11 @@ This is for making the documents ready for BERTopic
 """
 import numpy as np
 import pickle
+import argparse
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from typing import List
 
-args = None
 def serialize_data(dat, file_path):
     with open(file_path, "wb") as f:
         pickle.dump(dat, f)
@@ -53,3 +53,8 @@ def main(args):
     print("done with embedding...")
     # Writing data to disk
     serialize_data(embedding_dict, DATA_DIR / "embedding_dict.pkl")
+
+if __name__ == "__main__":
+    my_parser = argparse.ArgumentParser(description="Embed Documents")
+    args = my_parser.parse_args()
+    main(args)
