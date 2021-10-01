@@ -39,25 +39,28 @@ def main(args):
     DATA_DIR = Path("../BscThesisData/data")
     data_path = DATA_DIR / "paragraph_dict.pkl"
     resume_dict = read_pickle(data_path)
-
-    # Powering up the transformer!
-    model_list = ["Maltehb/-l-ctra-danish-electra-small-cased", "saattrupdan/nbailab-base-ner-scandi"]
-    sentence_model = SentenceTransformer(
-        "Maltehb/-l-ctra-danish-electra-small-cased")
-
-    embedding_dimension = sentence_model.encode("hejsa").shape[0]
     all_paragraphs = flatten_list(list(resume_dict.values()))
+    # Powering up the transformer!
+    transformer_list = ["Maltehb/-l-ctra-danish-electra-small-cased", "saattrupdan/nbailab-base-ner-scandi"]
 
+    for transformer in transformer_list:
+        print(f"ready for {transformer}!")
+        # Get the name of the transformer
+        transformer_name = transformer.split("/")[1]
+        # Boot it up
+        sentence_model = SentenceTransformer(transformer)
+    
+        # Embedding the documents #
+        print("Embedding documents!")
+        all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
+        embedding_dimension = sentence_model.encode("hejsa").shape[0]
+        embedding_dict = create_embedding_dict(resume_dict, all_embeds, embedding_dimension)
 
-    # Embedding the documents #
-    print("Embedding documents!")
-    all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
-
-    embedding_dict = create_embedding_dict(resume_dict, all_embeds, embedding_dimension)
-
-    print("done with embedding...")
-    # Writing data to disk
-    serialize_data(embedding_dict, DATA_DIR / "embedding_dict.pkl")
+        print("done with embedding...")
+        # Writing data to disk
+        embedding_path = DATA_DIR / f"{transformer_name}_embedding_dict.pkl"
+        serialize_data(embedding_dict, embedding_path)
+    print("all done!")
 
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
