@@ -4,6 +4,8 @@ import numpy as np
 from explainlp.explainlp import ClearSearch
 from pathlib import Path
 
+from sklearn.metrics.pairwise import cosine_similarity
+
 
 def read_pickle(file_path):
     with open(file_path, "rb") as f:
@@ -29,4 +31,18 @@ embeddings = flatten_embeddings(embeddings_dict)
 
 model.calculate_centroids(doc_topics["topic"].values, doc_topics["prob"], embeddings)
 
-model.transform_many(embeddings_dict.values())
+results = model.transform_many(embeddings_dict.values())
+
+
+print("it didn't crash!")
+
+stupid = np.zeros((0, 2))
+non_stupid = np.random.rand(1, 2)
+
+# try:
+#     cosine_similarity(stupid, non_stupid)
+# except ValueError as e:
+#     if "Reshape" in str(e):
+#         print("boo")
+#     elif "0 sample" in str(e):
+#         print("baah")
