@@ -8,5 +8,5 @@ model = ClearSearch(
 )
 
 
-DATA_DIR = Path("../../BscThesisData/data")
+DATA_DIR = Path("../BscThesisData/data")
 doc_topics = pd.read_csv(DATA_DIR / "doc_topics.csv")
