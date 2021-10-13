@@ -55,7 +55,9 @@ def main(args):
     data_path = (
         Path(args.data_path) if args.data_path else (DATA_DIR / "paragraph_dict.pkl")
     )
+    print(f"loading data from {data_path}...")
     resume_dict = read_pickle(data_path)
+    print("loaded the data!")
     all_paragraphs = flatten_list(list(resume_dict.values()))
     # Powering up the transformer!
     transformer_list = [
@@ -89,6 +91,7 @@ def main(args):
             embedding_path_arg if embedding_path_arg else embedding_path_local
         )
         serialize_data(embedding_dict, embedding_path)
+        print(f"written to disk at {embedding_path}!")
     print("all done!")
 
 
