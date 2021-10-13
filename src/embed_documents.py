@@ -98,11 +98,14 @@ def main(args):
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
     my_parser.add_argument(
-        "data_path", type=str, help="Gives the path to the data file (a pickle)"
+        "--data_path", type=str, help="Gives the path to the data file (a pickle)"
     )
     my_parser.add_argument(
-        "embedding_path", type=str, help="Gives the directory where to save embeddings"
+        "-emb",
+        "--embedding_path",
+        type=str,
+        required=False,
+        help="Gives the directory where to save embeddings",
     )
-    args = my_parser.parse_args()
     args = my_parser.parse_args()
     main(args)
