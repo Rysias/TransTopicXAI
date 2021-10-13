@@ -61,9 +61,10 @@ def main(args):
     all_paragraphs = flatten_list(list(resume_dict.values()))
     # Powering up the transformer!
     transformer_list = [
-        "chcaa/da_dacy_small_trf",
-        "chcaa/da_dacy_medium_trf",
-        "chcaa/da_dacy_large_trf",
+        # "chcaa/da_dacy_small_trf",
+        # "chcaa/da_dacy_medium_trf",
+        # "chcaa/da_dacy_large_trf",
+        "maltehb/-l-ctra-danish-electra-small-cased",
         "saattrupdan/nbailab-base-ner-scandi",
     ]
 
