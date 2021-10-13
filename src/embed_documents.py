@@ -7,7 +7,7 @@ import pickle
 import argparse
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
-from typing import List
+from typing import List, Union, Optional
 
 
 def serialize_data(dat, file_path):
@@ -42,9 +42,19 @@ def create_embedding_dict(resume_dict, embeddings, embedding_dimension):
     return embedding_dict
 
 
+def create_emb_path(
+    arg_dir: Union[str, Path, None], embedding_name: str
+) -> Optional[Path]:
+    if arg_dir is None:
+        return None
+    return Path(arg_dir) / embedding_name
+
+
 def main(args):
     DATA_DIR = Path("../BscThesisData/data")
-    data_path = DATA_DIR / "paragraph_dict.pkl"
+    data_path = (
+        Path(args.data_path) if args.data_path else (DATA_DIR / "paragraph_dict.pkl")
+    )
     resume_dict = read_pickle(data_path)
     all_paragraphs = flatten_list(list(resume_dict.values()))
     # Powering up the transformer!
@@ -72,12 +82,24 @@ def main(args):
 
         print("done with embedding...")
         # Writing data to disk
-        embedding_path = DATA_DIR / f"{transformer_name}_embedding_dict.pkl"
+        embedding_name = f"{transformer_name}_embedding_dict.pkl"
+        embedding_path_local = DATA_DIR / embedding_name
+        embedding_path_arg = create_emb_path(args.embedding_path, embedding_name)
+        embedding_path = (
+            embedding_path_arg if embedding_path_arg else embedding_path_local
+        )
         serialize_data(embedding_dict, embedding_path)
     print("all done!")
 
 
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
+    my_parser.add_argument(
+        "data_path", type=str, help="Gives the path to the data file (a pickle)"
+    )
+    my_parser.add_argument(
+        "embedding_path", type=str, help="Gives the directory where to save embeddings"
+    )
+    args = my_parser.parse_args()
     args = my_parser.parse_args()
     main(args)
