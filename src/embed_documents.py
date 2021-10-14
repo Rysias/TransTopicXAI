@@ -64,7 +64,7 @@ def main(args):
         # "chcaa/da_dacy_small_trf",
         # "chcaa/da_dacy_medium_trf",
         # "chcaa/da_dacy_large_trf",
-        "maltehb/-l-ctra-danish-electra-small-cased",
+        "Maltehb/-l-ctra-danish-electra-small-cased",
         "saattrupdan/nbailab-base-ner-scandi",
     ]
 
