@@ -61,7 +61,7 @@ def main(args):
         # Embedding the documents #
         print("Embedding documents!")
         all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
-        temp_df["embeddings"] = all_embeds
+        temp_df["embeddings"] = all_embeds.tolist()
 
         print("done with embedding...")
         # Writing data to disk
