@@ -71,7 +71,7 @@ def main(args):
     transformer_list = [
         "Maltehb/-l-ctra-danish-electra-small-cased",
         "Maltehb/danish-bert-botxo",
-        "xlm-roberta-large",
+        "sentence-transformers/paraphrase-xlm-r-multilingual-v1",
     ]
 
     for transformer in transformer_list:
@@ -94,12 +94,7 @@ def main(args):
 
         # Embedding the documents #
         print("Embedding documents!")
-        if transformer == transformer_list[2]:
-            all_embeds = process_large_model(
-                all_paragraphs, sentence_model, chunk_size=args.chunk_size
-            )
-        else:
-            all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
+        all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
         temp_df["embeddings"] = all_embeds.tolist()
 
         print("done with embedding...")
