@@ -80,6 +80,15 @@ def main(args):
         temp_df.drop(columns="resume", inplace=True)
         # Get the name of the transformer
         transformer_name = transformer.split("/")[-1]
+        embedding_name = f"{transformer_name}_emb_df.csv"
+        embedding_path_local = DATA_DIR / embedding_name
+        embedding_path_arg = create_emb_path(args.embedding_path, embedding_name)
+        embedding_path = (
+            embedding_path_arg if embedding_path_arg else embedding_path_local
+        )
+        if embedding_path.exists() and args.lazy:
+            print("already processed so we skip!")
+            continue
         # Boot it up
         sentence_model = SentenceTransformer(transformer)
 
@@ -93,12 +102,6 @@ def main(args):
 
         print("done with embedding...")
         # Writing data to disk
-        embedding_name = f"{transformer_name}_emb_df.csv"
-        embedding_path_local = DATA_DIR / embedding_name
-        embedding_path_arg = create_emb_path(args.embedding_path, embedding_name)
-        embedding_path = (
-            embedding_path_arg if embedding_path_arg else embedding_path_local
-        )
         print(f"written to disk at {embedding_path}!")
         temp_df.to_csv(embedding_path)
 
@@ -116,6 +119,9 @@ if __name__ == "__main__":
         type=str,
         required=False,
         help="Gives the directory where to save embeddings",
+    )
+    my_parser.add_argument(
+        "--lazy", action="store_true", help="doesn't transformers if embeddings exist"
     )
     args = my_parser.parse_args()
     main(args)
