@@ -41,7 +41,7 @@ def split_array(a: np.ndarray, chunk_size=1000) -> List[np.ndarray]:
 
 
 def process_large_model(
-    text: np.ndarray, model: SentenceTransformer, chunk_size=1000
+    text: np.ndarray, model: SentenceTransformer, chunk_size=500
 ) -> np.ndarray:
     emb_dims = model.encode("hej").shape[0]
     embeddings = np.zeros((text.shape[0], emb_dims))
