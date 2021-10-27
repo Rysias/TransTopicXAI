@@ -5,6 +5,7 @@ This is for making the documents ready for BERTopic
 import numpy as np
 import pandas as pd
 import pickle
+import torch
 import argparse
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
@@ -33,9 +34,26 @@ def create_emb_path(
     return Path(arg_dir) / embedding_name
 
 
-def split_df(df: pd.DataFrame, chunk_size=1000) -> List[pd.DataFrame]:
-    num_chunks = df.shape[0] // chunk_size + 1
-    return np.array_split(df, num_chunks)
+def split_array(a: np.ndarray, chunk_size=1000) -> List[np.ndarray]:
+    num_chunks = a.shape[0] // chunk_size + 1
+    return np.array_split(a, num_chunks)
+
+
+def process_roberta_embs(
+    text: np.ndarray, model: SentenceTransformer, chunk_size=1000
+) -> np.ndarray:
+    emb_dims = model.encode("hej").shape[0]
+    embeddings = np.zeros((text.shape[0], emb_dims))
+    current_idx = 0
+    for i, chunk in enumerate(split_array(text, chunk_size=chunk_size)):
+        stop_idx = (
+            current_idx + chunk.shape[0]
+        )  # Makes it stop at the right number of docs
+        new_embeddings = model.encode(chunk)
+        embeddings[current_idx:stop_idx, :] += new_embeddings
+        current_idx += chunk.shape[0]  # Reset to next document
+        torch.cuda.empty_cache()
+    return embeddings
 
 
 def main(args):
