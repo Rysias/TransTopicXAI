@@ -33,6 +33,11 @@ def create_emb_path(
     return Path(arg_dir) / embedding_name
 
 
+def split_df(df: pd.DataFrame, chunk_size=1000) -> List[pd.DataFrame]:
+    num_chunks = df.shape[0] // chunk_size + 1
+    return np.array_split(df, num_chunks)
+
+
 def main(args):
     DATA_DIR = Path("../BscThesisData/data")
     data_path = (
@@ -54,14 +59,14 @@ def main(args):
         temp_df = resume_df.copy()
         temp_df.drop(columns="resume", inplace=True)
         # Get the name of the transformer
-        transformer_name = transformer.split("/")[-1]
+        transformer_name = transformer.split("/")[1]
         # Boot it up
         sentence_model = SentenceTransformer(transformer)
 
         # Embedding the documents #
         print("Embedding documents!")
         all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
-        temp_df["embeddings"] = all_embeds.tolist()
+        temp_df["embeddings"] = all_embeds
 
         print("done with embedding...")
         # Writing data to disk
