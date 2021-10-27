@@ -77,7 +77,7 @@ def main(args):
         temp_df = resume_df.copy()
         temp_df.drop(columns="resume", inplace=True)
         # Get the name of the transformer
-        transformer_name = transformer.split("/")[1]
+        transformer_name = transformer.split("/")[-1]
         # Boot it up
         sentence_model = SentenceTransformer(transformer)
 
