@@ -7,7 +7,7 @@ import pandas as pd
 import pickle
 import torch
 import argparse
-import tqdm
+from tqdm import tqdm
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from typing import List, Union, Optional
