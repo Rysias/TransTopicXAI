@@ -53,6 +53,7 @@ def process_large_model(
         new_embeddings = model.encode(chunk)
         embeddings[current_idx:stop_idx, :] += new_embeddings
         current_idx += chunk.shape[0]  # Reset to next document
+        del new_embeddings
         torch.cuda.empty_cache()
     return embeddings
 
