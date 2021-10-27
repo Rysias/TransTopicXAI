@@ -39,7 +39,7 @@ def split_array(a: np.ndarray, chunk_size=1000) -> List[np.ndarray]:
     return np.array_split(a, num_chunks)
 
 
-def process_roberta_embs(
+def process_large_model(
     text: np.ndarray, model: SentenceTransformer, chunk_size=1000
 ) -> np.ndarray:
     emb_dims = model.encode("hej").shape[0]
@@ -83,7 +83,10 @@ def main(args):
 
         # Embedding the documents #
         print("Embedding documents!")
-        all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
+        if transformer == transformer_list[2]:
+            all_embeds = process_large_model(all_paragraphs, sentence_model)
+        else:
+            all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
         temp_df["embeddings"] = all_embeds
 
         print("done with embedding...")
