@@ -95,7 +95,9 @@ def main(args):
         # Embedding the documents #
         print("Embedding documents!")
         if transformer == transformer_list[2]:
-            all_embeds = process_large_model(all_paragraphs, sentence_model)
+            all_embeds = process_large_model(
+                all_paragraphs, sentence_model, chunk_size=args.chunk_size
+            )
         else:
             all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
         temp_df["embeddings"] = all_embeds.tolist()
@@ -123,5 +125,7 @@ if __name__ == "__main__":
     my_parser.add_argument(
         "--lazy", action="store_true", help="doesn't transformers if embeddings exist"
     )
+    my_parser.add_argument("--chunk-size", type=int, required=False)
+
     args = my_parser.parse_args()
     main(args)
