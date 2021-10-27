@@ -7,6 +7,7 @@ import pandas as pd
 import pickle
 import torch
 import argparse
+import tqdm
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from typing import List, Union, Optional
@@ -45,7 +46,7 @@ def process_large_model(
     emb_dims = model.encode("hej").shape[0]
     embeddings = np.zeros((text.shape[0], emb_dims))
     current_idx = 0
-    for i, chunk in enumerate(split_array(text, chunk_size=chunk_size)):
+    for chunk in tqdm(split_array(text, chunk_size=chunk_size)):
         stop_idx = (
             current_idx + chunk.shape[0]
         )  # Makes it stop at the right number of docs
