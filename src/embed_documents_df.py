@@ -44,11 +44,9 @@ def main(args):
     all_paragraphs = resume_df["resume"].values
     # Powering up the transformer!
     transformer_list = [
-        # "chcaa/da_dacy_small_trf",
-        # "chcaa/da_dacy_medium_trf",
-        # "chcaa/da_dacy_large_trf",
         "Maltehb/-l-ctra-danish-electra-small-cased",
-        "saattrupdan/nbailab-base-ner-scandi",
+        "Maltehb/danish-bert-botxo",
+        "xlm-roberta-large",
     ]
 
     for transformer in transformer_list:
@@ -56,7 +54,7 @@ def main(args):
         temp_df = resume_df.copy()
         temp_df.drop(columns="resume", inplace=True)
         # Get the name of the transformer
-        transformer_name = transformer.split("/")[1]
+        transformer_name = transformer.split("/")[-1]
         # Boot it up
         sentence_model = SentenceTransformer(transformer)
 
