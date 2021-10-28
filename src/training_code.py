@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
+from sklearn import metrics
 from simpletransformers.classification import ClassificationModel, ClassificationArgs
 from pathlib import Path
 from sklearn.model_selection import GroupKFold, train_test_split
-from typing import Generator, Tuple
+from typing import Dict, Generator, Tuple
 
 
 def create_k_folds(
@@ -18,6 +19,11 @@ def create_k_folds(
         yield train_idx, test_idx
 
 
+def create_label_dict(label_col: pd.Series) -> Dict[str, int]:
+    labels = label_col.unique()
+    return {label: i for i, label in enumerate(labels)}
+
+
 all_data = pd.read_csv(Path("../../BscThesisData/data/full_df.csv"))
 unique_ids = all_data["case_id"].unique()
 train_ids, test_ids = train_test_split(unique_ids, random_state=42, train_size=0.8)
@@ -25,24 +31,25 @@ train_ids, test_ids = train_test_split(unique_ids, random_state=42, train_size=0
 training_data = all_data.loc[np.isin(all_data["case_id"], train_ids)].reset_index(
     drop=True
 )
-labels = training_data["label"].unique()
-label_dict = {label: i for i, label in enumerate(labels)}
+
+label_dict = create_label_dict(all_data["label"])
 training_data = training_data.replace({"label": label_dict})
-
-for train_id, val_id in create_k_folds(training_data):
-    print(training_data.loc[train_id, :])
-    break
-
-
-num_labels = len(labels)
+num_labels = len(label_dict)
 
 
 model_name = "Maltehb/-l-ctra-danish-electra-small-cased"
 model_type = "electra"
 model_args = ClassificationArgs(num_train_epochs=1, overwrite_output_dir=True)
+results = []
+for train_id, val_id in create_k_folds(training_data):
+    train_dat = training_data.loc[train_id, ["resume", "label"]]
+    eval_dat = training_data.loc[val_id, ["resume", "label"]]
 
-model = ClassificationModel(
-    model_type, model_name, num_labels=num_labels, args=model_args, use_cuda=False
-)
-
-model.train_model(training_data, overwrite_output_dir=True)
+    model = ClassificationModel(
+        model_type, model_name, num_labels=num_labels, args=model_args, use_cuda=True
+    )
+    model.train_model(train_dat)
+    result, model_outputs, wrong_predictions = model.eval_model(
+        eval_dat, acc=metrics.f1_score
+    )
+    results.append(result["acc"])
