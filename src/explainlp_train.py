@@ -1,10 +1,14 @@
 import pandas as pd
+import pickle
 from pathlib import Path
 
 DATA_DIR = Path("../../BscThesisData/data")
 MODEL_PATH = Path("../models")
 
-full_df = pd.read_csv(DATA_DIR / "full_df.csv")
-full_df.head()
 
-full_df.groupby("case_id").first("label")
+def read_pickle(file_path):
+    with open(file_path, "rb") as f:
+        return pickle.load(f)
+
+
+label_df = pd.read_csv(DATA_DIR / "emne_labels.csv")
