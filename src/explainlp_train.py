@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 import pickle
 from pathlib import Path
+import sys
 
+sys.path.append("C:\\Users\\jhr\\ExplainlpTwitter\\")
+from explainlp.clearformer import Clearformer
 
 DATA_DIR = Path("../../BscThesisData/data")
 MODEL_PATH = Path("../models")
@@ -27,5 +30,3 @@ embedding_df = create_embedding_df(embedding_dict)
 label_df.set_index("case_id", inplace=True)
 
 label_df.join(embedding_df).dropna()
-
-testy = {k: v for k, v in embedding_dict.items() if k in set(label_df["case_id"])}
