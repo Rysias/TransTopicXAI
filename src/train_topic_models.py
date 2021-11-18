@@ -59,52 +59,51 @@ def find_na_rows(arr: np.ndarray) -> np.ndarray:
 # Paths
 DATA_DIR = Path("../../BscThesisData/data")
 MODEL_PATH = Path("../models")
-embedding_paths = list(DATA_DIR.glob("*_embedding_dict.pkl"))
 
-# Load texts
-clean_paragraphs = read_pickle(DATA_DIR / "paragraph_dict.pkl")
-docs = get_full_docs(clean_paragraphs)
+if __name__ == "__main__":
+    embedding_paths = list(DATA_DIR.glob("*_embedding_dict.pkl"))
+    # Load texts
+    clean_paragraphs = read_pickle(DATA_DIR / "paragraph_dict.pkl")
+    docs = get_full_docs(clean_paragraphs)
 
+    # Creating vectorizer
+    STOP_WORD_URL = "https://gist.githubusercontent.com/berteltorp/0cf8a0c7afea7f25ed754f24cfc2467b/raw/305d8e3930cc419e909d49d4b489c9773f75b2d6/stopord.txt"
+    STOP_WORDS = load_text_url(STOP_WORD_URL)
+    vectorizer_model = CountVectorizer(stop_words=STOP_WORDS)
+    pickle_object(vectorizer_model, MODEL_PATH / "vectorizer.pkl")
 
-# Creating vectorizer
-STOP_WORD_URL = "https://gist.githubusercontent.com/berteltorp/0cf8a0c7afea7f25ed754f24cfc2467b/raw/305d8e3930cc419e909d49d4b489c9773f75b2d6/stopord.txt"
-STOP_WORDS = load_text_url(STOP_WORD_URL)
-vectorizer_model = CountVectorizer(stop_words=STOP_WORDS)
-pickle_object(vectorizer_model, MODEL_PATH / "vectorizer.pkl")
+    # Looping over the models
+    for emb_path in embedding_paths:
+        model_name = get_model_name(emb_path)
+        print(f"processing {model_name}")
+        embedding_dict = read_pickle(emb_path)
 
+        embeddings = create_mean_embeddings(embedding_dict)
+        non_na_rows = ~find_na_rows(embeddings)
 
-# Looping over the models
-for emb_path in embedding_paths:
-    model_name = get_model_name(emb_path)
-    print(f"processing {model_name}")
-    embedding_dict = read_pickle(emb_path)
+        full_embs = embeddings[non_na_rows, :]
+        full_docs = docs[non_na_rows]
 
-    embeddings = create_mean_embeddings(embedding_dict)
-    non_na_rows = ~find_na_rows(embeddings)
+        # Fitting models
+        print("fitting model...")
+        topic_model = BERTopic(vectorizer_model=vectorizer_model, nr_topics=5)
+        topics, probs = topic_model.fit_transform(full_docs, full_embs)
 
-    full_embs = embeddings[non_na_rows, :]
-    full_docs = docs[non_na_rows]
+        # Saving predictions
+        print("saving predictions...")
+        preds_df = pd.DataFrame(
+            list(zip(topics, probs, docs)), columns=["topic", "prob", "doc"]
+        )
+        preds_df.to_csv(DATA_DIR / f"{model_name}_doc_topics.csv", index=False)
 
-    # Fitting models
-    print("fitting model...")
-    topic_model = BERTopic(vectorizer_model=vectorizer_model, nr_topics=5)
-    topics, probs = topic_model.fit_transform(full_docs, full_embs)
+        print("saving model")
+        topic_model.save(str(MODEL_PATH / f"{model_name}_topic_model"))
 
-    # Saving predictions
-    print("saving predictions...")
-    preds_df = pd.DataFrame(
-        list(zip(topics, probs, docs)), columns=["topic", "prob", "doc"]
-    )
-    preds_df.to_csv(DATA_DIR / f"{model_name}_doc_topics.csv", index=False)
-
-    print("saving model")
-    topic_model.save(str(MODEL_PATH / f"{model_name}_topic_model"))
-
-    # Saving topics
-    topic_dict = topic_model.get_topics()
-    topic_dict_clean = {
-        k: [tup[0] for tup in word_list]
-        for k, word_list in topic_dict.items()
-        if k != -1
-    }
-    pickle_object(topic_dict_clean, DATA_DIR / f"{model_name}_topic_dict.pkl")
+        # Saving topics
+        topic_dict = topic_model.get_topics()
+        topic_dict_clean = {
+            k: [tup[0] for tup in word_list]
+            for k, word_list in topic_dict.items()
+            if k != -1
+        }
+        pickle_object(topic_dict_clean, DATA_DIR / f"{model_name}_topic_dict.pkl")
