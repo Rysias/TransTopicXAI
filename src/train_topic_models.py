@@ -86,13 +86,13 @@ if __name__ == "__main__":
 
         # Fitting models
         print("fitting model...")
-        topic_model = BERTopic(vectorizer_model=vectorizer_model, nr_topics=5)
+        topic_model = BERTopic(vectorizer_model=vectorizer_model, nr_topics=10)
         topics, probs = topic_model.fit_transform(full_docs, full_embs)
 
         # Saving predictions
         print("saving predictions...")
         preds_df = pd.DataFrame(
-            list(zip(topics, probs, docs)), columns=["topic", "prob", "doc"]
+            list(zip(topics, probs, full_docs)), columns=["topic", "prob", "doc"]
         )
         preds_df.to_csv(DATA_DIR / f"{model_name}_doc_topics.csv", index=False)
 
