@@ -97,6 +97,9 @@ for emb_path in embedding_paths:
     )
     preds_df.to_csv(DATA_DIR / f"{model_name}_doc_topics.csv", index=False)
 
+    print("saving model")
+    topic_model.save(str(MODEL_PATH / f"{model_name}_topic_model"))
+
     # Saving topics
     topic_dict = topic_model.get_topics()
     topic_dict_clean = {
