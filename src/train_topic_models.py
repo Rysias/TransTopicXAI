@@ -1,4 +1,5 @@
 import pickle
+from typing import Dict, List
 import requests
 import pandas as pd
 import numpy as np
@@ -30,6 +31,10 @@ def get_paragraphs(paragraph_dict):
     return flatten_list(list(paragraph_dict.values()))
 
 
+def get_full_docs(paragraph_dict: Dict[str, List[str]]) -> List[str]:
+    return np.array([" ".join(par_list) for par_list in paragraph_dict.values()])
+
+
 def load_text_url(text_url: str):
     """Inputs a URL of a newline seperated text-file and returns a list"""
     response = requests.get(text_url)
@@ -42,6 +47,15 @@ def get_model_name(file_path: Path) -> str:
     return full_name[:stop_idx]
 
 
+def create_mean_embeddings(embedding_dict: Dict[str, np.ndarray]) -> np.ndarray:
+    arr_list = [arr.mean(axis=0) for arr in embedding_dict.values()]
+    return np.vstack(arr_list)
+
+
+def find_na_rows(arr: np.ndarray) -> np.ndarray:
+    return np.isnan(arr).any(axis=1)
+
+
 # Paths
 DATA_DIR = Path("../../BscThesisData/data")
 MODEL_PATH = Path("../models")
@@ -49,7 +63,8 @@ embedding_paths = list(DATA_DIR.glob("*_embedding_dict.pkl"))
 
 # Load texts
 clean_paragraphs = read_pickle(DATA_DIR / "paragraph_dict.pkl")
-docs = get_paragraphs(clean_paragraphs)
+docs = get_full_docs(clean_paragraphs)
+
 
 # Creating vectorizer
 STOP_WORD_URL = "https://gist.githubusercontent.com/berteltorp/0cf8a0c7afea7f25ed754f24cfc2467b/raw/305d8e3930cc419e909d49d4b489c9773f75b2d6/stopord.txt"
@@ -64,12 +79,16 @@ for emb_path in embedding_paths:
     print(f"processing {model_name}")
     embedding_dict = read_pickle(emb_path)
 
-    embeddings = flatten_embeddings(embedding_dict)
+    embeddings = create_mean_embeddings(embedding_dict)
+    non_na_rows = ~find_na_rows(embeddings)
+
+    full_embs = embeddings[non_na_rows, :]
+    full_docs = docs[non_na_rows]
 
     # Fitting models
     print("fitting model...")
     topic_model = BERTopic(vectorizer_model=vectorizer_model, nr_topics=5)
-    topics, probs = topic_model.fit_transform(docs, embeddings)
+    topics, probs = topic_model.fit_transform(full_docs, full_embs)
 
     # Saving predictions
     print("saving predictions...")
