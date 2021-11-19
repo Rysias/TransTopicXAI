@@ -45,6 +45,7 @@ def main(args):
     )
     predictions = model.predict(test_data["resume"])
     write_pickle(predictions, Path(args.save_path) / f"{model_type}_preds.pkl")
+    test_data.to_csv(Path(args.save_path) / "test_data.csv")
 
 
 if __name__ == "__main__":
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     my_parser.add_argument(
         "--data_path", type=str, help="Gives the path to the data file (a csv)"
     )
-    my_parser.add_argument("--save_path", type=str, help="gives path to save output")
+    my_parser.add_argument(
+        "--save_path", type=str, required=True, help="gives path to save output"
+    )
     args = my_parser.parse_args()
     main(args)
