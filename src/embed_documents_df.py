@@ -40,24 +40,6 @@ def split_array(a: np.ndarray, chunk_size=1000) -> List[np.ndarray]:
     return np.array_split(a, num_chunks)
 
 
-def process_large_model(
-    text: np.ndarray, model: SentenceTransformer, chunk_size=500
-) -> np.ndarray:
-    emb_dims = model.encode("hej").shape[0]
-    embeddings = np.zeros((text.shape[0], emb_dims))
-    current_idx = 0
-    for chunk in tqdm(split_array(text, chunk_size=chunk_size)):
-        stop_idx = (
-            current_idx + chunk.shape[0]
-        )  # Makes it stop at the right number of docs
-        new_embeddings = model.encode(chunk)
-        embeddings[current_idx:stop_idx, :] += new_embeddings
-        current_idx += chunk.shape[0]  # Reset to next document
-        del new_embeddings
-        torch.cuda.empty_cache()
-    return embeddings
-
-
 def main(args):
     data_path = Path(args.data_path)
 
