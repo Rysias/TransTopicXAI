@@ -68,7 +68,13 @@ def main(args):
 
         # Embedding the documents #
         print("Embedding documents!")
-        all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
+        if args.multi_gpu:
+            pool = sentence_model.start_multi_process_pool()
+
+            # Compute the embeddings using the multi-process pool
+            all_embeds = sentence_model.encode_multi_process(all_paragraphs, pool)
+        else:
+            all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
 
         print("done with embedding...")
         # Writing data to disk
@@ -93,7 +99,6 @@ if __name__ == "__main__":
     my_parser.add_argument(
         "--lazy", action="store_true", help="doesn't transformers if embeddings exist"
     )
-    my_parser.add_argument("--chunk-size", type=int, required=False)
-
+    my_parser.add_argument("--multi-gpu", action="store_true", help="use multiple GPUs")
     args = my_parser.parse_args()
     main(args)
