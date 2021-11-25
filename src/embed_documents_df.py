@@ -5,9 +5,7 @@ This is for making the documents ready for BERTopic
 import numpy as np
 import pandas as pd
 import pickle
-import torch
 import argparse
-from tqdm import tqdm
 from pathlib import Path
 from sentence_transformers import SentenceTransformer
 from typing import List, Union, Optional
