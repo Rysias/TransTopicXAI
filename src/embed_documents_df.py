@@ -59,33 +59,24 @@ def process_large_model(
 
 
 def main(args):
-    DATA_DIR = Path("../BscThesisData/data")
-    data_path = (
-        Path(args.data_path) if args.data_path else (DATA_DIR / "paragraph_dict.pkl")
-    )
+    data_path = Path(args.data_path)
+
     print(f"loading data from {data_path}...")
-    resume_df = pd.read_csv(data_path / "full_df.csv")
+    text_df = pd.read_csv(data_path / "all_data.csv")
     print("loaded the data!")
-    all_paragraphs = resume_df["resume"].values
+    all_paragraphs = text_df["text"].values
     # Powering up the transformer!
     transformer_list = [
-        "Maltehb/-l-ctra-danish-electra-small-cased",
-        "Maltehb/danish-bert-botxo",
-        "sentence-transformers/paraphrase-xlm-r-multilingual-v1",
+        "allenai/longformer-base-4096",
+        "allenai/longformer-large-4096",
     ]
 
     for transformer in transformer_list:
         print(f"ready for {transformer}!")
-        temp_df = resume_df.copy()
-        temp_df.drop(columns="resume", inplace=True)
         # Get the name of the transformer
         transformer_name = transformer.split("/")[-1]
-        embedding_name = f"{transformer_name}_emb_df.csv"
-        embedding_path_local = DATA_DIR / embedding_name
-        embedding_path_arg = create_emb_path(args.embedding_path, embedding_name)
-        embedding_path = (
-            embedding_path_arg if embedding_path_arg else embedding_path_local
-        )
+        embedding_name = f"{transformer_name}_embs.npy"
+        embedding_path = create_emb_path(args.embedding_path, embedding_name)
         if embedding_path.exists() and args.lazy:
             print("already processed so we skip!")
             continue
@@ -95,12 +86,12 @@ def main(args):
         # Embedding the documents #
         print("Embedding documents!")
         all_embeds = sentence_model.encode(all_paragraphs, show_progress_bar=True)
-        temp_df["embeddings"] = all_embeds.tolist()
 
         print("done with embedding...")
         # Writing data to disk
         print(f"written to disk at {embedding_path}!")
-        temp_df.to_csv(embedding_path)
+        np.save(embedding_path, all_embeds)
+        np
 
     print("all done!")
 
