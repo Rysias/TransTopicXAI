@@ -62,7 +62,7 @@ def main(args):
     data_path = Path(args.data_path)
 
     print(f"loading data from {data_path}...")
-    text_df = pd.read_csv(data_path / "all_data.csv")
+    text_df = pd.read_csv(data_path)
     print("loaded the data!")
     all_paragraphs = text_df["text"].values
     # Powering up the transformer!
@@ -70,6 +70,9 @@ def main(args):
         "allenai/longformer-base-4096",
         "allenai/longformer-large-4096",
     ]
+
+    id_path = Path(args.embedding_path) / "all_ids.npy"
+    np.save(id_path, text_df["id"].values)
 
     for transformer in transformer_list:
         print(f"ready for {transformer}!")
@@ -91,7 +94,6 @@ def main(args):
         # Writing data to disk
         print(f"written to disk at {embedding_path}!")
         np.save(embedding_path, all_embeds)
-        np
 
     print("all done!")
 
