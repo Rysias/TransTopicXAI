@@ -47,8 +47,7 @@ def main(args):
     all_paragraphs = text_df["text"].values
     # Powering up the transformer!
     transformer_list = [
-        "allenai/longformer-base-4096",
-        "allenai/longformer-large-4096",
+        "textattack/bert-base-uncased-imdb",
     ]
 
     id_path = Path(args.embedding_path) / "all_ids.npy"
