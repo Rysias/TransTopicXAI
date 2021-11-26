@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from pathlib import Path
 from bertopic import BERTopic
+import hdbscan
 from sklearn.feature_extraction.text import CountVectorizer
 
 
@@ -39,14 +40,19 @@ if __name__ == "__main__":
         # Fitting models
         print("fitting model...")
         vectorizer_model = CountVectorizer(ngram_range=(1, 2), stop_words="english")
+        nr_topics = 10
+        hdbscan_model = hdbscan.HDBSCAN(
+            metric="euclidean", cluster_selection_method="leaf", prediction_data=True
+        )
         topic_model = BERTopic(
-            low_memory=True,
+            language="english",
             vectorizer_model=vectorizer_model,
+            hdbscan_model=hdbscan_model,
             verbose=True,
-            nr_topics=10,
+            calculate_probabilities=True,
+            nr_topics=nr_topics,
         )
         topics, probs = topic_model.fit_transform(train_data["text"], embeddings)
-
         # Saving predictions
         print("saving predictions...")
         preds_df = pd.DataFrame(
