@@ -33,11 +33,28 @@ top_scores = raw_scores[
 ]
 
 # Getting column names :))
-column_names = [str(i) + "wuhu" for i in np.arange(10)]
-pre_model[0].get_feature_names(column_names)
+# Names to topic (manually)
+topic_names = {
+    0: "PopularMedia",
+    1: "LocalTalk",
+    2: "Media",
+    3: "UserSmallTalk",
+    4: "SocialExperiences",
+    5: "WishesAndDreams",
+    6: "NegativeFeelings",
+    7: "ExpressingFeelings",
+    8: "UserEncouragment",
+    9: "UserGreetings",
+}
 
 
-plt.barh(np.arange(5), top_scores.reshape(-1,))
+feature_names = pre_model[0].get_feature_names(list(topic_names.values()))
+feature_name_dict = {i: s.replace(" ", "+") for i, s in enumerate(feature_names)}
+
+top_names = [feature_name_dict[k] for k in top_idx]
+
+"hejsa nej".replace(" ", "+")
+plt.barh(top_names, top_scores.reshape(-1,))
 plt.show()
 np.argmax(np.abs(raw_scores))
 
