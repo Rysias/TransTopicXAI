@@ -48,7 +48,7 @@ def pred_loop(df: pd.DataFrame, explainer: LimeTextExplainer):
             row["cleantext"],
             predict_proba,
             num_features=5,
-            labels=pred_idx,
+            labels=(pred_idx),
         )
         fig = explanation.as_pyplot_figure()
         plt.savefig(DATA_DIR / f"bertexp_{i}.png")
