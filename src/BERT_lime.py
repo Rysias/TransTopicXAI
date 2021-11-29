@@ -57,6 +57,8 @@ def pred_loop(df: pd.DataFrame, explainer: LimeTextExplainer):
             labels=[pred_idx],
         )
         dump_dill(explanation, DATA_DIR / f"explanation_{i}.pkl")
+        explanation.as_pyplot_figure(label=pred_idx)
+        plt.savefig(DATA_DIR / f"bertplot_{i}.png")
 
 
 def main():
