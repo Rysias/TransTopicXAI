@@ -55,6 +55,7 @@ top_names = [feature_name_dict[k] for k in top_idx]
 
 "hejsa nej".replace(" ", "+")
 plt.barh(top_names, top_scores.reshape(-1,))
+plt.autoscale(enable=True, axis="y", tight=None)
 plt.show()
 np.argmax(np.abs(raw_scores))
 
