@@ -47,7 +47,7 @@ def main(args):
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="train topic model sentiment stuff")
     my_parser.add_argument(
-        "--data-path", type=str, help="Gives the path to the data directory"
+        "--data-dir", type=str, help="Gives the path to the data directory"
     )
     args = my_parser.parse_args()
     main(args)
