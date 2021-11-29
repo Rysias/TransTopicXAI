@@ -35,7 +35,7 @@ def main(args):
     )
     gridsearch = GridSearchCV(pipeline, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
     gridsearch.fit(X_train[:, 1:], Y_train)
-    y_preds = pipeline.predict(X_test[:, 1:])
+    y_preds = gridsearch.predict(X_test[:, 1:])
     test_ids = pd.Series(np.rint(X_test[:, 0])).astype(np.uint64).astype(str)
     pd.DataFrame({"id": test_ids, "y_true": Y_test, "y_pred": y_preds}).to_csv(
         DATA_DIR / "topic_preds.csv", index=False
