@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
 import argparse
+import joblib
 from pathlib import Path
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import Normalizer, PolynomialFeatures
-from sklearn.pipeline import make_pipeline
+from sklearn.pipeline import Pipeline
 
 
 def logodds_to_probs(coefs):
@@ -27,17 +28,20 @@ def main(args):
     normalizer = Normalizer()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
     model = LogisticRegression(solver="liblinear", penalty="l1", max_iter=200)
-    grid = {"C": np.logspace(-3, 3, 7)}  # l1 lasso
-    gridsearch = GridSearchCV(model, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
-    pipeline = make_pipeline(poly, normalizer, gridsearch, verbose=True)
-    pipeline.fit(X_train[:, 1:], Y_train)
+    grid = {"logistic__C": np.logspace(-3, 3, 7)}  # l1 lasso
+    pipeline = Pipeline(
+        steps=[("poly", poly), ("normalize", normalizer), ("logistic", model)],
+        verbose=True,
+    )
+    gridsearch = GridSearchCV(pipeline, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
+    gridsearch.fit(X_train[:, 1:], Y_train)
     y_preds = pipeline.predict(X_test[:, 1:])
     test_ids = pd.Series(np.rint(X_test[:, 0])).astype(np.uint64).astype(str)
     pd.DataFrame({"id": test_ids, "y_true": Y_test, "y_pred": y_preds}).to_csv(
         DATA_DIR / "topic_preds.csv", index=False
     )
 
-    logodds_to_probs(model.coef_)
+    joblib.dump(gridsearch.best_estimator_, DATA_DIR / "topic_predictor.joblib")
 
 
 if __name__ == "__main__":
