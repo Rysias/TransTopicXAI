@@ -28,7 +28,7 @@ def main(args):
     normalizer = Normalizer()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
     model = LogisticRegression(solver="saga", penalty="l1")
-    grid = {"logistic__C": np.logspace(-3, 3, 7)}  # l1 lasso
+    grid = {"logistic__C": np.logspace(-1, 5, 7)}  # l1 lasso
     pipeline = Pipeline(
         steps=[("poly", poly), ("normalize", normalizer), ("logistic", model)],
         verbose=True,
