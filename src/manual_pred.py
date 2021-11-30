@@ -65,6 +65,7 @@ def get_colors(scores: np.ndarray) -> str:
 
 def plot_embedding(emb: np.ndarray):
     fig = plt.barh(list(TOPIC_NAMES.values()), emb, color=get_colors(emb))
+    plt.subplots_adjust(left=0.45)
     return fig
 
 
@@ -98,6 +99,19 @@ for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
     tweet_text = test_tweets.loc[test_tweets.index[test_idx], "cleantext"]
     print(f"{tweet_text = }")
+    new = plot_embedding(test_emb)
+    plt.show()
     fig = explain_tweet(test_emb, MODEL_PATH, n=10)
     plt.show()
 
+# Explore the coefficients
+coef_names = pre_model[0].get_feature_names_out(list(TOPIC_NAMES.values()))
+coefs = logistic.coef_.reshape(-1)
+plt.barh(coef_names, coefs)
+plt.subplots_adjust(left=0.45)
+plt.show()
+
+idx = np.where(coef_names == "UserGreetings")
+coefs[idx]
+
+coef_names[10]
