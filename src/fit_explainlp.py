@@ -15,7 +15,7 @@ def logodds_to_probs(coefs):
 
 
 def main(args):
-    current_day = datetime.now().strftime("%y%m%d")
+    current_time = datetime.now().strftime("%y%m%d%H")
     DATA_DIR = Path(args.data_dir)
     all_embs = np.load(DATA_DIR / "topic_embs.npy")
     train_df = pd.read_csv(DATA_DIR / "clean_tweets.csv")
@@ -30,9 +30,13 @@ def main(args):
     normalizer = MinMaxScaler()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
     model = LogisticRegression(solver="saga", penalty="l1")
-    grid = {"logistic__C": np.logspace(-1, 5, 7)}  # l1 lasso
+    grid = {"logistic__C": np.logspace(-1, 5, 10)}  # l1 lasso
     pipeline = Pipeline(
-        steps=[("poly", poly), ("normalize", normalizer), ("logistic", model)],
+        steps=[
+            # ("poly", poly),
+            ("normalize", normalizer),
+            ("logistic", model),
+        ],
         verbose=True,
     )
     gridsearch = GridSearchCV(pipeline, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
@@ -40,11 +44,11 @@ def main(args):
     y_preds = gridsearch.predict(X_test[:, 1:])
     test_ids = pd.Series(np.rint(X_test[:, 0])).astype(np.uint64).astype(str)
     pd.DataFrame({"id": test_ids, "y_true": Y_test, "y_pred": y_preds}).to_csv(
-        DATA_DIR / f"topic_preds_{current_day}.csv", index=False
+        DATA_DIR / f"topic_preds_{current_time}.csv", index=False
     )
 
     joblib.dump(
-        gridsearch.best_estimator_, DATA_DIR / f"topic_predictor_{current_day}.joblib"
+        gridsearch.best_estimator_, DATA_DIR / f"topic_predictor_{current_time}.joblib"
     )
 
 
