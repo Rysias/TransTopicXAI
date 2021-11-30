@@ -1,14 +1,15 @@
-from typing import Dict
+from typing import Dict, List
 import joblib
 import pandas as pd
 import numpy as np
+import re
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 from pathlib import Path
+
 
 DATA_DIR = Path("../ExplainlpTwitter/output")
 NEW_DATA_DIR = Path("data/")
-MODEL_PATH = Path("./models/topic_predictor_v2.joblib")
+MODEL_DIR = Path("models")
 # Names to topic (manually)
 TOPIC_NAMES = {
     0: "PopularMedia",
@@ -22,6 +23,14 @@ TOPIC_NAMES = {
     8: "UserEncouragment",
     9: "UserGreetings",
 }
+
+
+def create_predictor_list() -> List[Path]:
+    return [
+        model_path
+        for model_path in MODEL_DIR.glob("*topic_predictor*")
+        if re.match("topic_predictor_\d+\.joblib", model_path.name)
+    ]
 
 
 def sigmoid(x):
@@ -63,8 +72,9 @@ def get_colors(scores: np.ndarray) -> str:
     return np.where(scores > 0, "#0057e7", "#d62d20")
 
 
-def plot_embedding(emb: np.ndarray):
-    fig = plt.barh(list(TOPIC_NAMES.values()), emb, color=get_colors(emb))
+def plot_embedding(emb: np.ndarray, pre_model):
+    transformed_embs = pre_model.transform(emb.reshape(1, -1))[0, 1:11]
+    fig = plt.barh(list(TOPIC_NAMES.values()), transformed_embs, color=get_colors(emb))
     plt.subplots_adjust(left=0.45)
     return fig
 
@@ -88,20 +98,21 @@ def explain_tweet(embed: np.ndarray, model_path: Path, n=57):
 
 
 # DATA
+model_path = create_predictor_list()[0]
 all_embs = np.load(DATA_DIR / "topic_embs.npy")
 test_tweets = pd.read_csv(NEW_DATA_DIR / "bert_test.csv", index_col=0)
 test_indeces = test_tweets.index
 test_embs = all_embs[test_indeces, 1:]
-pre_model, logistic, full_model = load_models(MODEL_PATH)
+pre_model, logistic, full_model = load_models(model_path)
 
 
 for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
     tweet_text = test_tweets.loc[test_tweets.index[test_idx], "cleantext"]
     print(f"{tweet_text = }")
-    new = plot_embedding(test_emb)
+    new = plot_embedding(test_emb, pre_model)
     plt.show()
-    fig = explain_tweet(test_emb, MODEL_PATH, n=10)
+    fig = explain_tweet(test_emb, model_path, n=10)
     plt.show()
 
 # Explore the coefficients
