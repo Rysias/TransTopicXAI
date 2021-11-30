@@ -124,7 +124,7 @@ distances = 2 * np.arange(len(coef_names))
 plt.barh(distances / 2, coefs[sort_idx], tick_label=coef_names[sort_idx])
 plt.gcf().set_size_inches(5, 25)
 plt.subplots_adjust(left=0.45, hspace=0)
-plt.rc("ytick", labelsize=5)
+plt.rc("ytick", labelsize=3)
 plt.show()
 
 idx = np.where(coef_names == "UserGreetings")
