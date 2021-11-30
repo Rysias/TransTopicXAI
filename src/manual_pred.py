@@ -97,6 +97,15 @@ def explain_tweet(embed: np.ndarray, model_path: Path, n=57):
     return plot_explanation(feature_names, top_scores, pred_val)
 
 
+def create_tweet_name(idx: int) -> Path:
+    return NEW_DATA_DIR / "explains" / f"tweet_{idx}.txt"
+
+
+def save_tweet(tweet: str, idx: int):
+    with open(create_tweet_name(idx), "w") as f:
+        f.write(tweet)
+
+
 # DATA
 model_list = create_predictor_list()
 model_path = create_predictor_list()[-1]
@@ -109,11 +118,13 @@ pre_model, logistic, full_model = load_models(model_path)
 
 for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
-    tweet_text = test_tweets.loc[test_tweets.index[test_idx], "cleantext"]
+    tweet_idx = test_tweets.index[test_idx]
+    tweet_text = test_tweets.loc[tweet_idx, "cleantext"]
     print(f"{tweet_text = }")
-    plt.show()
     fig = explain_tweet(test_emb, model_path, n=10)
-    plt.show()
+    plt.savefig(NEW_DATA_DIR / "explains" / f"topic_exp_{tweet_idx}.png")
+    save_tweet(tweet_text, tweet_idx)
+    # plt.show()
 
 # Explore the coefficients
 coef_names = pre_model[0].get_feature_names_out(list(TOPIC_NAMES.values()))
