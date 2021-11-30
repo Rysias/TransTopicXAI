@@ -28,8 +28,33 @@ def get_features(polynom, topic_names: Dict[int, str]) -> Dict[int, str]:
     return {i: s.replace(" ", "+") for i, s in enumerate(feature_names)}
 
 
+def load_models(model_path: Path):
+    pre_model = joblib.load(model_path)
+    logistic = pre_model.steps.pop(-1)[1]
+    full_model = joblib.load(model_path)
+    return (pre_model, logistic, full_model)
+
+
 def predict(embed: np.ndarray, pipe) -> int:
-    return pipe.predict(embed.reshape(1, -1))[0]
+    raw_pred = pipe.predict(embed.reshape(1, -1))[0]
+    return "Positive" if raw_pred else "Negative"
+
+
+def get_colors(scores: np.ndarray) -> str:
+    return np.where(scores > 0, "#0057e7", "#d62d20")
+
+
+def plot_explanation(names, scores, val):
+    fig = plt.barh(names, scores, color=get_colors(scores))
+    plt.subplots_adjust(left=0.45)
+    plt.title(f"Explaning a {val} prediction")
+    return fig
+
+
+def explain_tweet(embed: np.ndarray, model_path: Path):
+    pre_model, logistic, full_model = load_models(model_path)
+    pred_val = predict(embed, full_model)
+    return None
 
 
 pre_model = joblib.load(Path("./models/topic_predictor_v2.joblib"))
@@ -91,3 +116,5 @@ test_embs = all_embs[test_idx, 1:]
 full_model.predict(test_embs[0:1, :])[0]
 
 test_tweets["Sentiment"]
+
+predict(test_embs[2, :], full_model)
