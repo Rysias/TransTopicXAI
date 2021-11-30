@@ -74,7 +74,7 @@ def get_colors(scores: np.ndarray) -> str:
 
 def plot_embedding(emb: np.ndarray, pre_model):
     transformed_embs = pre_model.transform(emb.reshape(1, -1))[0, 1:11]
-    fig = plt.barh(list(TOPIC_NAMES.values()), transformed_embs, color=get_colors(emb))
+    fig = plt.barh(list(TOPIC_NAMES.values()), transformed_embs)
     plt.subplots_adjust(left=0.45)
     return fig
 
@@ -110,7 +110,6 @@ for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
     tweet_text = test_tweets.loc[test_tweets.index[test_idx], "cleantext"]
     print(f"{tweet_text = }")
-    new = plot_embedding(test_emb, pre_model)
     plt.show()
     fig = explain_tweet(test_emb, model_path, n=10)
     plt.show()
@@ -118,8 +117,14 @@ for test_idx in range(10):
 # Explore the coefficients
 coef_names = pre_model[0].get_feature_names_out(list(TOPIC_NAMES.values()))
 coefs = logistic.coef_.reshape(-1)
-plt.barh(coef_names, coefs)
-plt.subplots_adjust(left=0.45)
+sort_idx = np.argsort(coefs)
+
+distances = 2 * np.arange(len(coef_names))
+
+plt.barh(distances / 2, coefs[sort_idx], tick_label=coef_names[sort_idx])
+plt.gcf().set_size_inches(5, 25)
+plt.subplots_adjust(left=0.45, hspace=0)
+plt.rc("ytick", labelsize=5)
 plt.show()
 
 idx = np.where(coef_names == "UserGreetings")
