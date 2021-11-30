@@ -1,36 +1,56 @@
+from typing import Dict
 import joblib
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from pathlib import Path
-from sklearn.preprocessing import PolynomialFeatures
-import numpy as np
 
 DATA_DIR = Path("../ExplainlpTwitter/output")
+NEW_DATA_DIR = Path("data/")
 
 
 def sigmoid(x):
     return np.exp(-np.logaddexp(0, -x))
 
 
+def calc_scores(embeddings: np.ndarray, pre_model, logistic):
+    features = pre_model.transform(embeddings)
+    return features * logistic.coef_ + logistic.intercept_
+
+
+def top_n_idx(scores: np.ndarray, n: int = 10) -> np.ndarray:
+    return np.argsort(np.abs(scores), axis=1)[0, -n:]
+
+
+def get_features(polynom, topic_names: Dict[int, str]) -> Dict[int, str]:
+    feature_names = polynom.get_feature_names_out(list(topic_names.values()))
+    return {i: s.replace(" ", "+") for i, s in enumerate(feature_names)}
+
+
+def predict(embed: np.ndarray, pipe) -> int:
+    return pipe.predict(embed.reshape(1, -1))[0]
+
+
 pre_model = joblib.load(Path("./models/topic_predictor_v2.joblib"))
-logistic = pre_model.steps.pop(-1)
-logistic = logistic[1]
+logistic = pre_model.steps.pop(-1)[1]
+full_model = joblib.load(Path("./models/topic_predictor_v2.joblib"))
 
 all_embs = np.load(DATA_DIR / "topic_embs.npy")
 
 test_embs = pre_model.transform(all_embs[:10, 1:])
-np.sigmoi
 
 test_emb = test_embs[0, :]
-test_emb.shape
 
-raw_scores = (test_emb.shape * logistic.coef_.T) + logistic.intercept_
+logistic.predict(test_emb.reshape(1, -1))
 
-top_idx = np.argsort(np.abs(raw_scores), axis=0)[-5:].reshape(-1,)
-top_idx
-top_scores = raw_scores[
-    top_idx,
-]
+raw_scores = test_emb * logistic.coef_
+intercept_scores = raw_scores + logistic.intercept_
+
+raw_pred = sigmoid(np.sum(raw_scores) + logistic.intercept_)
+
+top_idx = np.argsort(np.abs(intercept_scores), axis=1)[0, -10:]
+top_scores = intercept_scores[0, top_idx]
 
 # Getting column names :))
 # Names to topic (manually)
@@ -48,17 +68,26 @@ topic_names = {
 }
 
 
-feature_names = pre_model[0].get_feature_names(list(topic_names.values()))
+feature_names = pre_model[0].get_feature_names_out(list(topic_names.values()))
 feature_name_dict = {i: s.replace(" ", "+") for i, s in enumerate(feature_names)}
 
 top_names = [feature_name_dict[k] for k in top_idx]
 
-"hejsa nej".replace(" ", "+")
-plt.barh(top_names, top_scores.reshape(-1,))
-plt.autoscale(enable=True, axis="y", tight=None)
+color = np.where(top_scores > 0, "#0057e7", "#d62d20")
+fig = plt.barh(top_names, top_scores, color=color)
+val = "positive"
+plt.subplots_adjust(left=0.45)
+plt.title(f"Explaning a {val} prediction")
 plt.show()
-np.argmax(np.abs(raw_scores))
 
 sigmoid(np.dot(test_embs, logistic.coef_.T) + logistic.intercept_)
 logistic.coef_
 
+# DATA
+test_tweets = pd.read_csv(NEW_DATA_DIR / "bert_test.csv", index_col=0)
+test_idx = test_tweets.index
+test_embs = all_embs[test_idx, 1:]
+
+full_model.predict(test_embs[0:1, :])[0]
+
+test_tweets["Sentiment"]
