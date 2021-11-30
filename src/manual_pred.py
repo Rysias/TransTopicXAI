@@ -98,7 +98,8 @@ def explain_tweet(embed: np.ndarray, model_path: Path, n=57):
 
 
 # DATA
-model_path = create_predictor_list()[0]
+model_list = create_predictor_list()
+model_path = create_predictor_list()[-1]
 all_embs = np.load(DATA_DIR / "topic_embs.npy")
 test_tweets = pd.read_csv(NEW_DATA_DIR / "bert_test.csv", index_col=0)
 test_indeces = test_tweets.index
