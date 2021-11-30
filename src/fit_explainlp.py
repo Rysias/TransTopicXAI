@@ -5,7 +5,7 @@ import joblib
 from pathlib import Path
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import Normalizer, PolynomialFeatures
+from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import Pipeline
 
 
@@ -25,7 +25,7 @@ def main(args):
         fullX, fullY, test_size=10000, random_state=42
     )
 
-    normalizer = Normalizer()
+    normalizer = MinMaxScaler()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
     model = LogisticRegression(solver="saga", penalty="l1")
     grid = {"logistic__C": np.logspace(-1, 5, 7)}  # l1 lasso
