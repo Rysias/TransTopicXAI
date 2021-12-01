@@ -2,8 +2,10 @@ from typing import Dict, List
 import joblib
 import pandas as pd
 import numpy as np
+import json
 import re
 import matplotlib.pyplot as plt
+from pysentimiento import create_analyzer
 from pathlib import Path
 
 
@@ -12,18 +14,6 @@ NEW_DATA_DIR = Path("data/")
 MODEL_DIR = Path("models")
 SAVE_DIR = NEW_DATA_DIR / "explains"
 # Names to topic (manually)
-TOPIC_NAMES = {
-    0: "PopularMedia",
-    1: "LocalTalk",
-    2: "Media",
-    3: "UserSmallTalk",
-    4: "SocialExperiences",
-    5: "WishesAndDreams",
-    6: "NegativeFeelings",
-    7: "ExpressingFeelings",
-    8: "UserEncouragment",
-    9: "UserGreetings",
-}
 
 
 def create_predictor_list() -> List[Path]:
@@ -108,6 +98,13 @@ def save_tweet(tweet: str, idx: int):
         f.write(tweet)
 
 
+def read_json(file_path: Path):
+    with open(file_path, "r") as f:
+        return json.load(f)
+
+
+TOPIC_NAMES = {int(k): v for k, v in read_json("tweet_cats.json").items()}
+
 # DATA
 model_list = create_predictor_list()
 model_path = create_predictor_list()[-1]
@@ -152,7 +149,12 @@ plt.title("Global Coefficients")
 plt.savefig(SAVE_DIR / "global_features.png")
 plt.show()
 
-idx = np.where(coef_names == "UserGreetings")
-coefs[idx]
+# Getting predictions from pysentimiento #
+sentiment = create_analyzer(task="sentiment", lang="en")
 
-coef_names[10]
+preds = sentiment.predict(test_tweets["cleantext"].tolist())
+pred_list = [{pred.output: max(pred.probas.values())} for pred in preds]
+
+for tweet_id, pred_dict in zip(test_tweets.index, pred_list):
+    with open(SAVE_DIR / f"bertpred_{tweet_id}.json", "w") as f:
+        json.dump(pred_dict, f)
