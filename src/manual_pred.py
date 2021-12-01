@@ -54,9 +54,15 @@ def load_models(model_path: Path):
     return (pre_model, logistic, full_model)
 
 
+def calc_conf(prob: float) -> float:
+    conf = prob if (prob > 0.5) else 1 - prob
+    return np.round(conf, 2)
+
+
 def predict(embed: np.ndarray, pipe) -> int:
-    raw_pred = pipe.predict(embed.reshape(1, -1))[0]
-    return "Positive" if raw_pred else "Negative"
+    raw_proba = pipe.predict_proba(embed.reshape(1, -1))[0][1]
+    conf = calc_conf(raw_proba)
+    return "Positive" if raw_proba > 0.5 else "Negative", conf
 
 
 def get_colors(scores: np.ndarray) -> str:
@@ -70,23 +76,23 @@ def plot_embedding(emb: np.ndarray, pre_model):
     return fig
 
 
-def plot_explanation(names, scores, val):
+def plot_explanation(names, scores, val, conf):
     fig = plt.barh(names, scores, color=get_colors(scores))
     plt.subplots_adjust(left=0.45)
     plt.yticks(fontsize=10)
-    plt.title(f"Explaning a {val} prediction")
+    plt.title(f"Explaning a {val} with {conf} confidence")
     return fig
 
 
 def explain_tweet(embed: np.ndarray, model_path: Path, n=57):
     embed = embed.reshape(1, -1)
     pre_model, logistic, full_model = load_models(model_path)
-    pred_val = predict(embed, full_model)
+    pred_val, conf = predict(embed, full_model)
     scores = calc_scores(embed, pre_model, logistic)
     top_idx = top_n_idx(scores, n=n)
     feature_names = get_top_features(pre_model[0], top_idx)
     top_scores = scores[0, top_idx]
-    return plot_explanation(feature_names, top_scores, pred_val)
+    return plot_explanation(feature_names, top_scores, val=pred_val, conf=conf)
 
 
 def create_tweet_name(idx: int) -> Path:
@@ -127,7 +133,7 @@ for test_idx in range(10):
     else:
         plt.savefig(SAVE_DIR / f"topic_exp_{tweet_idx}.png")
         save_tweet(tweet_text, tweet_idx)
-
+    plt.clf()
 # Explore the coefficients
 coef_names = pre_model[0].get_feature_names_out(list(TOPIC_NAMES.values()))
 coefs = logistic.coef_.reshape(-1)
@@ -142,7 +148,7 @@ plt.barh(
     tick_label=coef_names[sort_idx],
     color=get_colors(coefs[sort_idx]),
 )
-plt.gcf().set_size_inches(5, 25)
+plt.gcf().set_size_inches(10, 15)
 plt.subplots_adjust(left=0.45, hspace=0)
 plt.rc("ytick", labelsize=15)
 plt.title("Global Coefficients")
