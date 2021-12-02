@@ -18,13 +18,13 @@ def load_docs(DATA_DIR: Path) -> np.ndarray:
     return pd.read_csv(path, usecols=["cleantweets"])["cleantweets"]
 
 
-def load_topic_model(path: Path) -> BERTopic:
-    return BERTopic.load(str(path))
+def load_topic_model(DATA_DIR: Path) -> BERTopic:
+    return BERTopic.load(str(DATA_DIR / "topic_model"))
 
 
 def main(args):
     DATA_DIR = Path(args.data_dir)
-    topic_model = load_topic_model(Path(args.topic_model))
+    topic_model = load_topic_model(DATA_DIR)
     embeddings = load_embeddings(DATA_DIR)
     docs = load_docs(DATA_DIR)
     topics, probs = topic_model.transform(docs, embeddings)
@@ -35,6 +35,5 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Script for transforming embeddings into topics")
     parser.add_argument("--data-dir", type=str, help="Directory to find and save data")
-    parser.add_argument("--topic-model", type=str, help="Path to topic model")
     args = parser.parse_args()
     main(args)
