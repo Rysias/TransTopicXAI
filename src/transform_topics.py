@@ -4,8 +4,16 @@ Script for transforming embeddings into topics / probs to be used for creating t
 import argparse
 import numpy as np
 import pandas as pd
+import logging
 from bertopic import BERTopic
 from pathlib import Path
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
+    datefmt="%d-%m-%Y:%H:%M:%S",
+)
 
 
 def load_embeddings(DATA_DIR: Path) -> np.ndarray:
@@ -15,7 +23,7 @@ def load_embeddings(DATA_DIR: Path) -> np.ndarray:
 
 def load_docs(DATA_DIR: Path) -> np.ndarray:
     path = DATA_DIR / "clean_tweets.csv"
-    return pd.read_csv(path, usecols=["cleantweets"])["cleantweets"]
+    return pd.read_csv(path, usecols=["cleantweets"])["cleantext"]
 
 
 def load_topic_model(DATA_DIR: Path) -> BERTopic:
@@ -24,10 +32,15 @@ def load_topic_model(DATA_DIR: Path) -> BERTopic:
 
 def main(args):
     DATA_DIR = Path(args.data_dir)
+    logging.info("loading topic model...")
     topic_model = load_topic_model(DATA_DIR)
+    logging.info("loading embeddings")
     embeddings = load_embeddings(DATA_DIR)
+    logging.info("loading data")
     docs = load_docs(DATA_DIR)
+    logging.info("transforming embeddings / docs")
     topics, probs = topic_model.transform(docs, embeddings)
+    logging.info("writing to file!")
     full_doc_topics = pd.DataFrame({"topic": topics, "prob": probs})
     full_doc_topics.to_csv(DATA_DIR / "full_doc_topics.csv")
 
