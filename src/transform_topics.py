@@ -11,7 +11,7 @@ from pathlib import Path
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s",
+    format="%(asctime)s %(levelname)-8s %(message)s",
     datefmt="%d-%m-%Y:%H:%M:%S",
 )
 
@@ -23,7 +23,7 @@ def load_embeddings(DATA_DIR: Path) -> np.ndarray:
 
 def load_docs(DATA_DIR: Path) -> np.ndarray:
     path = DATA_DIR / "clean_tweets.csv"
-    return pd.read_csv(path, usecols=["cleantweets"])["cleantext"]
+    return pd.read_csv(path, usecols=["cleantext"])["cleantext"]
 
 
 def load_topic_model(DATA_DIR: Path) -> BERTopic:
