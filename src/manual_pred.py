@@ -5,7 +5,8 @@ import numpy as np
 import json
 import re
 import matplotlib.pyplot as plt
-from pysentimiento import create_analyzer
+
+# from pysentimiento import create_analyzer
 from pathlib import Path
 
 
@@ -14,6 +15,9 @@ NEW_DATA_DIR = Path("data/")
 MODEL_DIR = Path("models")
 SAVE_DIR = NEW_DATA_DIR / "explains"
 # Names to topic (manually)
+
+
+testy = np.load(NEW_DATA_DIR / "topic_embs.npy")
 
 
 def create_predictor_list() -> List[Path]:
@@ -155,6 +159,7 @@ plt.title("Global Coefficients")
 plt.savefig(SAVE_DIR / "global_features.png")
 plt.show()
 
+full_model.predict(testy[:100, :])
 # Getting predictions from pysentimiento #
 sentiment = create_analyzer(task="sentiment", lang="en")
 
@@ -164,3 +169,4 @@ pred_list = [{pred.output: max(pred.probas.values())} for pred in preds]
 for tweet_id, pred_dict in zip(test_tweets.index, pred_list):
     with open(SAVE_DIR / f"bertpred_{tweet_id}.json", "w") as f:
         json.dump(pred_dict, f)
+
