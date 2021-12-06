@@ -10,10 +10,6 @@ from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import Pipeline
 
 
-def logodds_to_probs(coefs):
-    return [np.round(np.exp(x) / (1 + np.exp(x)), 5) for x in coefs[0]]
-
-
 def main(args):
     current_time = datetime.now().strftime("%y%m%d%H")
     DATA_DIR = Path(args.data_dir)
