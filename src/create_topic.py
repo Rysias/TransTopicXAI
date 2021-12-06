@@ -32,7 +32,7 @@ def get_random_idx(
 def main(args):
     print("loadin data...")
     docs = load_docs(args.data_path)
-    time_stamp = datetime.now().strftime("%Y%m%d_%H%M&S")
+    time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     embeddings = load_embeds(args.embedding_path)
     np.random.seed(0)
     sample_idx = get_random_idx(docs, sample_size=args.data_size)
