@@ -2,11 +2,14 @@ from typing import Dict, List
 import numpy as np
 import pandas as pd
 from pathlib import Path
+from bertopic import BERTopic
 from sklearn.metrics.pairwise import cosine_similarity
 
 
 MODEL_PATH = Path("../ExplainlpTwitter/output/topic_model")
 EMB_PATH = Path("../ExplainlpTwitter/output/embeddings.npy")
+
+topic_model = BERTopic.load(MODEL_PATH)
 
 doc_topics = pd.read_csv(Path("data") / "full_doc_topics.csv", index_col=0)
 cool_idx = doc_topics["topic"] != -1
@@ -16,6 +19,11 @@ topic_ids = np.unique(non_null_topics)
 
 
 full_embs = np.load(EMB_PATH)
+smaller_embs = np.vstack(
+    (topic_model.umap_model.transform(emb) for emb in np.split(full_embs[:, 1:], 16))
+)
+
+
 small_embs = full_embs[cool_idx, 1:]
 
 
