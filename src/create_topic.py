@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Union
 
@@ -31,6 +32,7 @@ def get_random_idx(
 def main(args):
     print("loadin data...")
     docs = load_docs(args.data_path)
+    time_stamp = datetime.now().strftime("%Y%m%d_%H%M&S")
     embeddings = load_embeds(args.embedding_path)
     np.random.seed(0)
     sample_idx = get_random_idx(docs, sample_size=args.data_size)
@@ -56,11 +58,12 @@ def main(args):
     preds_df = pd.DataFrame(
         list(zip(topics, probs, small_docs)), columns=["topic", "prob", "doc"]
     )
-    preds_df.to_csv(Path(args.save_path) / "doc_topics.csv", index=False)
-    np.save(Path(args.save_path) / "small_embs.npy", small_embs)
+    preds_df.to_csv(Path(args.save_path) / f"{time_stamp}_doc_topics.csv", index=False)
+    np.save(Path(args.save_path) / f"{time_stamp}_small_embs.npy", small_embs)
     print("savin model...")
     topic_model.save(
-        str((Path(args.save_path) / "topic_model")), save_embedding_model=False
+        str((Path(args.save_path) / f"{time_stamp}_topic_model")),
+        save_embedding_model=False,
     )
     print("all done!")
 
