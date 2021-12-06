@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format="%(asctime)s %(levelname)-8s %(message)s",
     datefmt="%d-%m-%Y:%H:%M:%S",
 )
@@ -29,6 +29,7 @@ def load_docs(DATA_DIR: Path) -> np.ndarray:
 
 def load_topic_model(DATA_DIR: Path) -> BERTopic:
     topic_path = str(next(DATA_DIR.glob("*_topic_model")))
+    logging.debug(f"{topic_path = }")
     return BERTopic.load(topic_path)
 
 
