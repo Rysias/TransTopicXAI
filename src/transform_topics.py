@@ -2,6 +2,7 @@
 Script for transforming embeddings into topics / probs to be used for creating topic embeddings
 """
 import argparse
+from datetime import datetime
 import numpy as np
 import pandas as pd
 import logging
@@ -32,6 +33,7 @@ def load_topic_model(DATA_DIR: Path) -> BERTopic:
 
 
 def main(args):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     DATA_DIR = Path(args.data_dir)
     logging.info("loading topic model...")
     topic_model = load_topic_model(DATA_DIR)
@@ -43,7 +45,7 @@ def main(args):
     topics, probs = topic_model.transform(docs, embeddings)
     logging.info("writing to file!")
     full_doc_topics = pd.DataFrame({"topic": topics, "prob": probs})
-    full_doc_topics.to_csv(DATA_DIR / "full_doc_topics.csv")
+    full_doc_topics.to_csv(DATA_DIR / f"full_doc_topics_{timestamp}.csv")
 
 
 if __name__ == "__main__":
