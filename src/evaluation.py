@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, Union, Callable
 import pandas as pd
 import numpy as np
@@ -5,7 +6,7 @@ from pathlib import Path
 from sklearn import metrics
 from sentence_transformers import SentenceTransformer
 
-OUTPUT_DIR = Path("./data/")
+OUTPUT_DIR = Path("data")
 EVAL_DICT = {
     "accuracy": metrics.accuracy_score,
     "f1": metrics.f1_score,
@@ -23,8 +24,12 @@ def evaluate_preds(
     return {metric: func(y_true, y_pred) for metric, func in eval_dict.items()}
 
 
+# Get time
+current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 # Evaluating my model
-topic_preds = pd.read_csv(OUTPUT_DIR / "topic_preds.csv")
+latest_pred_path = list(OUTPUT_DIR.glob("*topic_preds_*.csv"))[-1]
+topic_preds = pd.read_csv(latest_pred_path)
 
 # Evaluating sentiment on same data!
 big_preds = pd.read_csv(OUTPUT_DIR / "big_preds.csv")
@@ -48,10 +53,5 @@ bert_df = pd.DataFrame(bert_results, index=[0]).assign(
     model="bertweet", num_params=total_num
 )
 topic_df = pd.DataFrame(topic_results, index=[1]).assign(model="topic", num_params=10)
-all_results = pd.concat(
-    (
-        bert_df,
-        topic_df,
-    )
-)
-all_results.to_csv(OUTPUT_DIR / "comparison_results.csv")
+all_results = pd.concat((bert_df, topic_df,))
+all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
