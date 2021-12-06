@@ -17,7 +17,6 @@ SAVE_DIR = NEW_DATA_DIR / "explains"
 # Names to topic (manually)
 
 
-testy = np.load(NEW_DATA_DIR / "topic_embs.npy")
 
 
 def create_predictor_list() -> List[Path]:
@@ -156,7 +155,7 @@ plt.gcf().set_size_inches(10, 15)
 plt.subplots_adjust(left=0.45, hspace=0)
 plt.rc("ytick", labelsize=15)
 plt.title("Global Coefficients")
-plt.savefig(SAVE_DIR / "global_features.png")
+#plt.savefig(SAVE_DIR / "global_features.png")
 plt.show()
 
 full_model.predict(testy[:100, :])
