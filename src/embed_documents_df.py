@@ -46,12 +46,7 @@ def main(args):
     print("loaded the data!")
     all_paragraphs = text_df["text"].values
     # Powering up the transformer!
-    transformer_list = [
-        "textattack/bert-base-uncased-imdb",
-    ]
-
-    id_path = Path(args.embedding_path) / "all_ids.npy"
-    np.save(id_path, text_df["id"].values)
+    transformer_list = ["finiteautomata/bertweet-base-sentiment-analysis"]
 
     for transformer in transformer_list:
         print(f"ready for {transformer}!")
@@ -86,7 +81,7 @@ def main(args):
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
     my_parser.add_argument(
-        "--data_path", type=str, help="Gives the path to the data file (a pickle)"
+        "--data_path", type=str, help="Gives the path to the data file (a csv)"
     )
     my_parser.add_argument(
         "-emb",
