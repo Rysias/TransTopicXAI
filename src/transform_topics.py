@@ -18,13 +18,13 @@ logging.basicConfig(
 
 
 def load_embeddings(DATA_DIR: Path) -> np.ndarray:
-    path = DATA_DIR / "embeddings.npy"
+    path = DATA_DIR / "bertweet-base-sentiment-analysis_embs.npy"
     return np.load(path)[:, 1:]
 
 
 def load_docs(DATA_DIR: Path) -> np.ndarray:
-    path = DATA_DIR / "clean_tweets.csv"
-    return pd.read_csv(path, usecols=["cleantext"])["cleantext"]
+    path = DATA_DIR / "tweeteval_text.csv"
+    return pd.read_csv(path, usecols=["text"])["text"]
 
 
 def load_topic_model(DATA_DIR: Path) -> BERTopic:
