@@ -1,14 +1,25 @@
 from typing import Dict, List
 import numpy as np
+import argparse
 import pandas as pd
-import hdbscan
 from pathlib import Path
+from explainlp.clearformer import Clearformer
 from bertopic import BERTopic
-from sklearn.metrics.pairwise import cosine_similarity
 
 
-MODEL_PATH = next(Path("models").glob("*_topic_model"))
-EMB_PATH = Path("data/umap_embs.npy")
+def latest_pattern(dr: Path, pat: str) -> Path:
+    return list(dr.glob(pat))[-1]
+
+
+def main(args):
+    DATA_DIR = Path(args.data_dir)
+    doc_topics = latest_pattern(DATA_DIR, "*full_doc_topics_*.csv")
+    embeddings = latest_pattern(DATA_DIR, "*bertweet-base-sentiment-analysis_embs.npy")
+    topic_model = latest_pattern(DATA_DIR, "*_topic_model")
+    clearformer = Clearformer(topic_model)
+
+    filter_idx = doc_topics["topic"] != -1
+    non_null_topics = doc_topics.loc[filter_idx, "topic"].values
 
 
 doc_path = next(Path("data").glob("*full_doc_topics_*.csv"))
@@ -30,3 +41,13 @@ np.save(Path("data/newer_centroids.npy"), centroids)
 topic_embs = cosine_similarity(full_embs, centroids)
 np.save(Path("data/topic_embs.npy"), topic_embs)
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(help="creates topic embeddings using Clearformer")
+    parser.add_argument(
+        "--data-dir",
+        default="../../final_proj_dat",
+        help="the directory with all the data",
+    )
+    args = parser.parse_args()
+    main(args)
