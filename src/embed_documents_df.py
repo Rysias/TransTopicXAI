@@ -33,11 +33,6 @@ def create_emb_path(
     return Path(arg_dir) / embedding_name
 
 
-def split_array(a: np.ndarray, chunk_size=1000) -> List[np.ndarray]:
-    num_chunks = a.shape[0] // chunk_size + 1
-    return np.array_split(a, num_chunks)
-
-
 def main(args):
     data_path = Path(args.data_path)
 
