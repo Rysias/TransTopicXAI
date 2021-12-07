@@ -26,13 +26,17 @@ def read_file(file: Path) -> List[str]:
 
 
 all_text = []
-all_labels = []
 all_types = []
 for file in DATA_DIR.rglob("*_text.txt"):
     all_text.extend(read_file(file))
-    all_labels.extend(scan_sentiment(file))
     all_types.extend(scan_type(file))
 
+
+all_labels = []
+for file in DATA_DIR.rglob("*_labels.txt"):
+    all_labels.extend(scan_sentiment(file))
+
+set(all_labels)
 
 df = pd.DataFrame({"text": all_text, "label": all_labels, "type": all_types})
 df = df.assign(
@@ -40,3 +44,11 @@ df = df.assign(
 )
 
 df["text"].to_csv(Path("data/tweeteval_text.csv"))
+
+
+sent_df = df.dropna()
+
+test_df = sent_df[sent_df["type"] == "test"].drop(columns="type")
+test_df.to_csv(Path("data/tweeteval_test.csv"))
+train_df = sent_df[sent_df["type"] != "test"].drop(columns="type")
+train_df.to_csv(Path("data/tweeteval_train.csv"))
