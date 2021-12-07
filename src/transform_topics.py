@@ -28,7 +28,7 @@ def load_docs(DATA_DIR: Path) -> np.ndarray:
 
 
 def load_topic_model(DATA_DIR: Path) -> BERTopic:
-    topic_path = str(next(DATA_DIR.glob("*_topic_model")))
+    topic_path = str(list(DATA_DIR.glob("*_topic_model"))[-1])
     logging.debug(f"{topic_path = }")
     return BERTopic.load(topic_path)
 
