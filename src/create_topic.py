@@ -29,11 +29,21 @@ def get_random_idx(
     return np.random.choice(all_idx, size=int(sample_size), replace=False)
 
 
+def test_idx_filter(data_path: str, docs_size: int) -> np.array:
+    """ Loads the index for train to avoid leakage """
+    index_path = Path(data_path).parent / "tweeteval_test.csv"
+    test_idx = pd.read_csv(index_path, index_col=0).index.values
+    return ~np.isin(np.arange(docs_size), test_idx)
+
+
 def main(args):
     print("loadin data...")
-    docs = load_docs(args.data_path)
+    all_docs = load_docs(args.data_path)
+    all_embeddings = load_embeds(args.embedding_path)
+    test_filter = test_idx_filter(args.data_path, docs_size=all_docs.shape[0])
+    docs = all_docs[test_filter]
+    embeddings = all_embeddings[test_filter, :]
     time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    embeddings = load_embeds(args.embedding_path)
     np.random.seed(0)
     sample_idx = get_random_idx(docs, sample_size=args.data_size)
     small_docs = docs[sample_idx]
