@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from cuml.manifold.umap import UMAP
 
 
-def load_docs(data_path: Union[str, Path], text_col="cleantext") -> np.ndarray:
+def load_docs(data_path: Union[str, Path], text_col="text") -> np.ndarray:
     df = pd.read_csv(Path(data_path))
     return df[text_col].values
 
