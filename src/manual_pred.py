@@ -18,11 +18,11 @@ SAVE_DIR = NEW_DATA_DIR / "explains"
 
 
 def create_predictor_list() -> List[Path]:
-    return [
+    return sorted(
         model_path
         for model_path in MODEL_DIR.glob("*topic_predictor*")
         if re.match("topic_predictor_\d+\.joblib", model_path.name)
-    ]
+    )
 
 
 def sigmoid(x):
@@ -58,7 +58,7 @@ def load_models(model_path: Path):
 def predict(embed: np.ndarray, pipe) -> int:
     raw_proba = pipe.predict_proba(embed.reshape(1, -1))[0]
     label = np.argmax(raw_proba)
-    conf = np.max(raw_proba)
+    conf = np.round(np.max(raw_proba), 2)
     return label, conf
 
 
@@ -99,7 +99,7 @@ def create_tweet_name(idx: int) -> Path:
 
 
 def save_tweet(tweet: str, idx: int):
-    with open(create_tweet_name(idx), "w") as f:
+    with open(create_tweet_name(idx), "w", encoding="utf8") as f:
         f.write(tweet)
 
 
@@ -110,10 +110,11 @@ def read_json(file_path: Path):
 
 TOPIC_NAMES = {int(k): v for k, v in read_json("tweeteval_cats.json").items()}
 
+
 # DATA
 LABEL_DICT = {0: "Negative", 1: "Neutral", 2: "Positive"}
 model_list = create_predictor_list()
-model_path = create_predictor_list()[-1]
+model_path = model_list[-1]
 emb_path = sorted(NEW_DATA_DIR.glob("topic_embs_test_*.npy"))[-1]
 all_test_embs = np.load(emb_path)
 test_tweets = pd.read_csv(NEW_DATA_DIR / "explains" / "bert_test.csv", index_col=0)
@@ -124,9 +125,7 @@ test_filter = all_tests.isin(test_indeces)
 test_embs = all_test_embs[test_filter, :]
 pre_model, logistic, full_model = load_models(model_path)
 
-full_model.predict_proba(test_embs)
-logistic.classes_
-do_save = False
+do_save = True
 for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
     tweet_idx = test_tweets.index[test_idx]
@@ -157,7 +156,7 @@ for i, label in LABEL_DICT.items():
     plt.subplots_adjust(left=0.45, hspace=0)
     plt.rc("ytick", labelsize=15)
     plt.title(f"Global Coefficients: {label}")
-    plt.savefig(SAVE_DIR / f"global_features_{label}.png")
+    # plt.savefig(SAVE_DIR / f"global_features_{label}.png")
     plt.show()
 
 # Getting predictions from pysentimiento #
