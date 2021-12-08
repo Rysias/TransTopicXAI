@@ -48,6 +48,8 @@ def main(args):
     filter_idx = get_filter_idx(doc_topics, test_idx)
     non_null_topics = doc_topics.loc[filter_idx].values
     filtered_embeddings = embeddings[filter_idx, :]
+    print(f"{filtered_embeddings.shape = }")
+    print(f"{non_null_topics.shape = }")
     X = np.hstack((non_null_topics.reshape(-1, 1), filtered_embeddings))
     topic_embs = clearformer.fit_transform(X)
     # Create test set embeddings
