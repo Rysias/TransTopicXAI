@@ -57,8 +57,8 @@ def main(args):
     test_filter = get_filter_idx(doc_topics, test_idx, get_testset=True)
     test_embs = clearformer.transform(embeddings[~test_filter, :])
     # Save it all to files
-    np.save(DATA_DIR / "topic_embs_train_{nowtime}.npy", topic_embs)
-    np.save(DATA_DIR / "topic_embs_test_{nowtime}.npy", test_embs)
+    np.save(DATA_DIR / f"topic_embs_train_{nowtime}.npy", topic_embs)
+    np.save(DATA_DIR / f"topic_embs_test_{nowtime}.npy", test_embs)
     joblib.dump(clearformer, DATA_DIR / f"clearformer_{nowtime}.joblib")
 
 
