@@ -55,8 +55,7 @@ def main(args):
     print(f"{X.shape = }")
     clearformer.fit(X)
     # Create train set embeddings
-    train_filter = get_filter_idx(doc_topics, train_idx, get_testset=True)
-    train_embs = clearformer.transform(embeddings[~train_filter, :])
+    train_embs = clearformer.transform(embeddings[doc_topics.index.isin(train_idx), :])
     # Create test set embeddings
     test_filter = get_filter_idx(doc_topics, test_idx, get_testset=True)
     test_embs = clearformer.transform(embeddings[~test_filter, :])
