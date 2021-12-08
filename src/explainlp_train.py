@@ -59,7 +59,9 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(help="creates topic embeddings using Clearformer")
+    parser = argparse.ArgumentParser(
+        description="creates topic embeddings using Clearformer"
+    )
     parser.add_argument(
         "--data-dir",
         default="../../final_proj_dat",
