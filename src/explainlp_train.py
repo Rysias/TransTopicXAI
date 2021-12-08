@@ -24,6 +24,7 @@ def load_embeds(dr: Path) -> np.ndarray:
 
 def load_topics(dr: Path) -> pd.Series:
     doc_topics = latest_pattern(dr, "*full_doc_topics_*.csv")
+    print(doc_topics)
     return pd.read_csv(doc_topics, usecols=["topic"])["topic"]
 
 
