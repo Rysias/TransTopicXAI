@@ -49,12 +49,9 @@ def get_pred_idx(sentence: str) -> int:
 
 def pred_loop(df: pd.DataFrame, explainer: LimeTextExplainer):
     for i, row in df.iterrows():
-        pred_idx = get_pred_idx(row["cleantext"])
+        pred_idx = get_pred_idx(row["text"])
         explanation = explainer.explain_instance(
-            row["cleantext"],
-            predict_proba,
-            num_features=5,
-            labels=[pred_idx],
+            row["text"], predict_proba, num_features=5, labels=[pred_idx],
         )
         dump_dill(explanation, DATA_DIR / f"explanation_{i}.pkl")
         explanation.as_pyplot_figure(label=pred_idx)
