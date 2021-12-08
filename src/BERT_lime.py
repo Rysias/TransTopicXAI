@@ -3,18 +3,12 @@ import pandas as pd
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-import dill
 from pathlib import Path
 from pysentimiento import create_analyzer
 from lime.lime_text import LimeTextExplainer
 from pysentimiento.analyzer import AnalyzerOutput
 
 DATA_DIR = Path("data/")
-
-
-def dump_dill(obj, file_path: Path):
-    with open(file_path, "wb") as f:
-        dill.dump(obj, f)
 
 
 def sort_sentiment(res: AnalyzerOutput) -> np.array:
@@ -53,7 +47,6 @@ def pred_loop(df: pd.DataFrame, explainer: LimeTextExplainer):
         explanation = explainer.explain_instance(
             row["text"], predict_proba, num_features=5, labels=[pred_idx],
         )
-        dump_dill(explanation, DATA_DIR / f"explanation_{i}.pkl")
         explanation.as_pyplot_figure(label=pred_idx)
         plt.savefig(DATA_DIR / f"bertplot_{i}.png")
 
