@@ -58,7 +58,7 @@ def main(args):
     train_embs = clearformer.transform(embeddings[doc_topics.index.isin(train_idx), :])
     # Create test set embeddings
     test_filter = doc_topics.index.isin(test_idx)
-    test_embs = clearformer.transform(embeddings[~test_filter, :])
+    test_embs = clearformer.transform(embeddings[test_filter, :])
     # Save it all to files
     np.save(DATA_DIR / f"topic_embs_train_{nowtime}.npy", train_embs)
     np.save(DATA_DIR / f"topic_embs_test_{nowtime}.npy", test_embs)
