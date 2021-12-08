@@ -34,11 +34,7 @@ def main(args):
     model = LogisticRegression(solver="saga", penalty="l1")
     grid = {"logistic__C": np.logspace(-1, 5, 10)}  # l1 lasso
     pipeline = Pipeline(
-        steps=[
-            # ("poly", poly),
-            ("normalize", normalizer),
-            ("logistic", model),
-        ],
+        steps=[("poly", poly), ("normalize", normalizer), ("logistic", model),],
         verbose=True,
     )
     gridsearch = GridSearchCV(pipeline, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
