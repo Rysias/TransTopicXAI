@@ -11,7 +11,7 @@ from sklearn.pipeline import Pipeline
 
 
 def load_latest_embeddings(dr: Path, settype="train"):
-    emb_path = dr.glob(f"*topic_embs_{settype}_*.npy")
+    emb_path = sorted(dr.glob(f"*topic_embs_{settype}_*.npy"))[-1]
     return np.load(emb_path)
 
 
