@@ -17,7 +17,7 @@ if __name__ == "__main__":
     DATA_DIR = Path(args.data_dir)
     test_df = pd.read_csv(DATA_DIR / "tweeteval_test.csv")
     sentiment = create_analyzer("sentiment", "en")
-    preds = sentiment.predict(["I'm pissed", "I'm happy"])
+    preds = sentiment.predict(test_df["text"])
     parsed_preds = [parse_prediction(pred) for pred in preds]
     bertweet_preds = pd.DataFrame({"y_true": test_df["label"], "y_pred": parsed_preds})
     bertweet_preds.to_csv(DATA_DIR / "bertweet_preds.csv")
