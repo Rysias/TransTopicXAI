@@ -9,7 +9,7 @@ from bertopic import BERTopic
 
 
 def latest_pattern(dr: Path, pat: str) -> Path:
-    return list(dr.glob(pat))[-1]
+    return sorted(dr.glob(pat))[-1]
 
 
 def load_topic_model(dr: Path) -> BERTopic:
