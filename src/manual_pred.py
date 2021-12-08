@@ -55,15 +55,12 @@ def load_models(model_path: Path):
     return (pre_model, logistic, full_model)
 
 
-def calc_conf(prob: float) -> float:
-    conf = prob if (prob > 0.5) else 1 - prob
-    return np.round(conf, 2)
-
-
 def predict(embed: np.ndarray, pipe) -> int:
-    raw_proba = pipe.predict_proba(embed.reshape(1, -1))[0][1]
-    conf = calc_conf(raw_proba)
-    return "Positive" if raw_proba > 0.5 else "Negative", conf
+    label_dict = {0: "Negative", 1: "Neutral", 2: "Positive"}
+    raw_proba = pipe.predict_proba(embed.reshape(1, -1))[0]
+    label = np.argmax(raw_proba)
+    conf = np.max(raw_proba)
+    return label_dict[label], conf
 
 
 def get_colors(scores: np.ndarray) -> str:
@@ -110,18 +107,23 @@ def read_json(file_path: Path):
         return json.load(f)
 
 
-TOPIC_NAMES = {int(k): v for k, v in read_json("tweet_cats.json").items()}
+TOPIC_NAMES = {int(k): v for k, v in read_json("tweeteval_cats.json").items()}
 
 # DATA
 model_list = create_predictor_list()
 model_path = create_predictor_list()[-1]
-all_embs = np.load(DATA_DIR / "topic_embs.npy")
-test_tweets = pd.read_csv(NEW_DATA_DIR / "bert_test.csv", index_col=0)
+emb_path = sorted(NEW_DATA_DIR.glob("topic_embs_test_*.npy"))[-1]
+all_test_embs = np.load(emb_path)
+test_tweets = pd.read_csv(NEW_DATA_DIR / "explains" / "bert_test.csv", index_col=0)
 test_indeces = test_tweets.index
-test_embs = all_embs[test_indeces, 1:]
+all_tests = pd.read_csv(NEW_DATA_DIR / "tweeteval_test.csv", index_col=0).index
+test_filter = all_tests.isin(test_indeces)
+
+test_embs = all_test_embs[test_filter, :]
 pre_model, logistic, full_model = load_models(model_path)
 
-
+full_model.predict_proba(test_embs)
+logistic.classes_
 do_save = True
 for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
