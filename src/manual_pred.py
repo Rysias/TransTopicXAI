@@ -56,11 +56,10 @@ def load_models(model_path: Path):
 
 
 def predict(embed: np.ndarray, pipe) -> int:
-    label_dict = {0: "Negative", 1: "Neutral", 2: "Positive"}
     raw_proba = pipe.predict_proba(embed.reshape(1, -1))[0]
     label = np.argmax(raw_proba)
     conf = np.max(raw_proba)
-    return label_dict[label], conf
+    return label, conf
 
 
 def get_colors(scores: np.ndarray) -> str:
@@ -74,11 +73,11 @@ def plot_embedding(emb: np.ndarray, pre_model):
     return fig
 
 
-def plot_explanation(names, scores, val, conf):
+def plot_explanation(names, scores, label, conf):
     fig = plt.barh(names, scores, color=get_colors(scores))
     plt.subplots_adjust(left=0.45)
     plt.yticks(fontsize=10)
-    plt.title(f"Explaning a {val} with {conf} confidence")
+    plt.title(f"Explaning a {label} with {conf} confidence")
     return fig
 
 
@@ -86,11 +85,13 @@ def explain_tweet(embed: np.ndarray, model_path: Path, n=57):
     embed = embed.reshape(1, -1)
     pre_model, logistic, full_model = load_models(model_path)
     pred_val, conf = predict(embed, full_model)
+    label = LABEL_DICT[pred_val]
     scores = calc_scores(embed, pre_model, logistic)
+    scores = scores[pred_val, :].reshape(1, -1)
     top_idx = top_n_idx(scores, n=n)
     feature_names = get_top_features(pre_model[0], top_idx)
     top_scores = scores[0, top_idx]
-    return plot_explanation(feature_names, top_scores, val=pred_val, conf=conf)
+    return plot_explanation(feature_names, top_scores, label=label, conf=conf)
 
 
 def create_tweet_name(idx: int) -> Path:
@@ -110,6 +111,7 @@ def read_json(file_path: Path):
 TOPIC_NAMES = {int(k): v for k, v in read_json("tweeteval_cats.json").items()}
 
 # DATA
+LABEL_DICT = {0: "Negative", 1: "Neutral", 2: "Positive"}
 model_list = create_predictor_list()
 model_path = create_predictor_list()[-1]
 emb_path = sorted(NEW_DATA_DIR.glob("topic_embs_test_*.npy"))[-1]
@@ -124,11 +126,11 @@ pre_model, logistic, full_model = load_models(model_path)
 
 full_model.predict_proba(test_embs)
 logistic.classes_
-do_save = True
+do_save = False
 for test_idx in range(10):
     test_emb = test_embs[test_idx, :]
     tweet_idx = test_tweets.index[test_idx]
-    tweet_text = test_tweets.loc[tweet_idx, "cleantext"]
+    tweet_text = test_tweets.loc[tweet_idx, "text"]
     print(f"{tweet_text = }")
     fig = explain_tweet(test_emb, model_path, n=10)
     if not do_save:
@@ -137,26 +139,26 @@ for test_idx in range(10):
         plt.savefig(SAVE_DIR / f"topic_exp_{tweet_idx}.png")
         save_tweet(tweet_text, tweet_idx)
     plt.clf()
+
 # Explore the coefficients
 coef_names = pre_model[0].get_feature_names_out(list(TOPIC_NAMES.values()))
-coefs = logistic.coef_.reshape(-1)
-sort_idx = np.argsort(coefs)
-
-distances = 2 * np.arange(len(coef_names))
-
-plt.clf()
-plt.barh(
-    distances / 2,
-    coefs[sort_idx],
-    tick_label=coef_names[sort_idx],
-    color=get_colors(coefs[sort_idx]),
-)
-plt.gcf().set_size_inches(10, 15)
-plt.subplots_adjust(left=0.45, hspace=0)
-plt.rc("ytick", labelsize=15)
-plt.title("Global Coefficients")
-# plt.savefig(SAVE_DIR / "global_features.png")
-plt.show()
+distances = np.arange(len(coef_names))
+for i, label in LABEL_DICT.items():
+    coefs = logistic.coef_[i, :]
+    sort_idx = np.argsort(coefs)
+    plt.clf()
+    plt.barh(
+        distances,
+        coefs[sort_idx],
+        tick_label=coef_names[sort_idx],
+        color=get_colors(coefs[sort_idx]),
+    )
+    plt.gcf().set_size_inches(10, 15)
+    plt.subplots_adjust(left=0.45, hspace=0)
+    plt.rc("ytick", labelsize=15)
+    plt.title(f"Global Coefficients: {label}")
+    plt.savefig(SAVE_DIR / f"global_features_{label}.png")
+    plt.show()
 
 # Getting predictions from pysentimiento #
 from pysentimiento import create_analyzer
