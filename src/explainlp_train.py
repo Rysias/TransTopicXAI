@@ -40,6 +40,7 @@ def main(args):
     nowtime = datetime.now().strftime("%Y%m%d_%H%M%S")
     DATA_DIR = Path(args.data_dir)
     test_idx = pd.read_csv(DATA_DIR / "tweeteval_test.csv", index_col=0).index
+    train_idx = pd.read_csv(DATA_DIR / "tweeteval_train.csv", index_col=0).index
     doc_topics = load_topics(DATA_DIR)
     embeddings = load_embeds(DATA_DIR)
     topic_model = load_topic_model(DATA_DIR)
@@ -51,13 +52,16 @@ def main(args):
     print(f"{filtered_embeddings.shape = }")
     print(f"{non_null_topics.shape = }")
     X = np.hstack((non_null_topics.reshape(-1, 1), filtered_embeddings))
-    print(f"{X = }")
-    topic_embs = clearformer.fit_transform(X)
+    print(f"{X.shape = }")
+    clearformer.fit(X)
+    # Create train set embeddings
+    train_filter = get_filter_idx(doc_topics, train_idx, get_testset=True)
+    train_embs = clearformer.transform(embeddings[~train_filter, :])
     # Create test set embeddings
     test_filter = get_filter_idx(doc_topics, test_idx, get_testset=True)
     test_embs = clearformer.transform(embeddings[~test_filter, :])
     # Save it all to files
-    np.save(DATA_DIR / f"topic_embs_train_{nowtime}.npy", topic_embs)
+    np.save(DATA_DIR / f"topic_embs_train_{nowtime}.npy", train_embs)
     np.save(DATA_DIR / f"topic_embs_test_{nowtime}.npy", test_embs)
     joblib.dump(clearformer, DATA_DIR / f"clearformer_{nowtime}.joblib")
 
