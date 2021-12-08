@@ -27,20 +27,34 @@ def load_topics(dr: Path) -> pd.Series:
     return pd.read_csv(doc_topics, usecols=["topic"])["topic"]
 
 
+def get_filter_idx(doc_topics: pd.Series, test_idx: pd.Index, get_testset=False):
+    not_in_test = ~doc_topics.index.isin(test_idx)
+    if get_testset:
+        return ~not_in_test
+    is_topic = doc_topics != -1
+    return not_in_test & is_topic
+
+
 def main(args):
     nowtime = datetime.now().strftime("%Y%m%d_%H%M%S")
     DATA_DIR = Path(args.data_dir)
+    test_idx = pd.read_csv(DATA_DIR / "tweeteval_test.csv", index_col=0).index
     doc_topics = load_topics(DATA_DIR)
     embeddings = load_embeds(DATA_DIR)
     topic_model = load_topic_model(DATA_DIR)
     clearformer = Clearformer(topic_model)
 
-    filter_idx = doc_topics != -1
+    filter_idx = get_filter_idx(doc_topics, test_idx)
     non_null_topics = doc_topics.loc[filter_idx].values
     filtered_embeddings = embeddings[filter_idx, :]
     X = np.hstack((non_null_topics.reshape(-1, 1), filtered_embeddings))
     topic_embs = clearformer.fit_transform(X)
-    np.save(DATA_DIR / "topic_embs_{nowtime}.npy", topic_embs)
+    # Create test set embeddings
+    test_filter = get_filter_idx(doc_topics, test_idx, get_testset=True)
+    test_embs = clearformer.transform(embeddings[~test_filter, :])
+    # Save it all to files
+    np.save(DATA_DIR / "topic_embs_train_{nowtime}.npy", topic_embs)
+    np.save(DATA_DIR / "topic_embs_test_{nowtime}.npy", test_embs)
     joblib.dump(clearformer, DATA_DIR / f"clearformer_{nowtime}.joblib")
 
 
