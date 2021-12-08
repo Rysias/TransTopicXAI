@@ -4,24 +4,30 @@ import pandas as pd
 import argparse
 import joblib
 from pathlib import Path
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import Pipeline
 
 
+def load_latest_embeddings(dr: Path, settype="train"):
+    emb_path = dr.glob(f"*topic_embs_{settype}_*.npy")
+    return np.load(emb_path)
+
+
+def load_target(dr: Path, settype="train"):
+    target_path = dr / f"tweeteval_{settype}.csv"
+    return pd.read_csv(target_path)["label"].values
+
+
 def main(args):
     current_time = datetime.now().strftime("%y%m%d%H")
     DATA_DIR = Path(args.data_dir)
-    all_embs = np.load(DATA_DIR / "topic_embs.npy")
-    train_df = pd.read_csv(DATA_DIR / "clean_tweets.csv")
-    train_df.head()
 
-    fullX = all_embs
-    fullY = train_df["Sentiment"].values
-    X_train, X_test, Y_train, Y_test = train_test_split(
-        fullX, fullY, test_size=10000, random_state=42
-    )
+    X_train = load_latest_embeddings(DATA_DIR, settype="train")
+    X_test = load_latest_embeddings(DATA_DIR, settype="test")
+    Y_train = load_target(DATA_DIR, settype="train")
+    Y_test = load_target(DATA_DIR, settype="test")
 
     normalizer = MinMaxScaler()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
