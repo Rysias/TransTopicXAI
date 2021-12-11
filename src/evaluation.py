@@ -2,18 +2,20 @@ from datetime import datetime
 from typing import Dict, Union, Callable
 import pandas as pd
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn import metrics
 from sentence_transformers import SentenceTransformer
+from functools import partial
+from numpy.typing import ArrayLike
 
 OUTPUT_DIR = Path("data")
-EVAL_DICT = {
-    "accuracy": metrics.accuracy_score,
-    "f1": metrics.f1_score,
-    "roc_auc": metrics.roc_auc_score,
-    "precision": metrics.precision_score,
-    "recall": metrics.recall_score,
-}
+
+
+def f1_pos_neg(y_true: ArrayLike, y_pred: ArrayLike):
+    """ Calculates the average f1 score of positive and negative predictions """
+    return np.mean(metrics.f1_score(y_true, y_pred, average=None)[[0, 2]])
 
 
 def evaluate_preds(
@@ -24,24 +26,26 @@ def evaluate_preds(
     return {metric: func(y_true, y_pred) for metric, func in eval_dict.items()}
 
 
+EVAL_DICT = {
+    "accuracy": metrics.balanced_accuracy_score,
+    "f1pn": f1_pos_neg,
+    "precision": partial(metrics.precision_score, average="macro"),
+    "recall": partial(metrics.recall_score, average="macro"),
+}
 # Get time
 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Evaluating my model
-latest_pred_path = list(OUTPUT_DIR.glob("*topic_preds_*.csv"))[-1]
+latest_pred_path = sorted(OUTPUT_DIR.glob("*topic_preds_*.csv"))[-1]
 topic_preds = pd.read_csv(latest_pred_path)
 
 # Evaluating sentiment on same data!
-big_preds = pd.read_csv(OUTPUT_DIR / "big_preds.csv")
-big_preds["id"] = big_preds["id"].astype(np.uint64)
-small_preds = big_preds[big_preds["id"].isin(topic_preds["id"])]
-y_true = small_preds["Sentiment"]
-y_pred = small_preds["pred"]
+big_preds = pd.read_csv(OUTPUT_DIR / "bertweet_preds.csv")
 
 print("Evaluation of topic model")
 topic_results = evaluate_preds(topic_preds["y_true"], topic_preds["y_pred"], EVAL_DICT)
 print("Evaluation of big model")
-bert_results = evaluate_preds(y_true, y_pred, EVAL_DICT)
+bert_results = evaluate_preds(big_preds["y_true"], big_preds["y_pred"], EVAL_DICT)
 
 
 # Count number of parameters
@@ -55,3 +59,15 @@ bert_df = pd.DataFrame(bert_results, index=[0]).assign(
 topic_df = pd.DataFrame(topic_results, index=[1]).assign(model="topic", num_params=10)
 all_results = pd.concat((bert_df, topic_df,))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
+
+all_results
+
+# Plotting #
+sns.set_theme(style="whitegrid")
+plot_results = pd.melt(
+    all_results, id_vars=["model", "num_params"], var_name="metric", value_name="score"
+)
+sns.catplot(data=plot_results, kind="bar", x="metric", y="score", hue="model").set(
+    title="Bertweet vs topic model"
+)
+plt.show()
