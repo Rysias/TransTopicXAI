@@ -60,7 +60,6 @@ topic_df = pd.DataFrame(topic_results, index=[1]).assign(model="topic", num_para
 all_results = pd.concat((bert_df, topic_df,))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
 
-all_results
 
 # Plotting #
 sns.set_theme(style="whitegrid")
@@ -70,4 +69,4 @@ plot_results = pd.melt(
 sns.catplot(data=plot_results, kind="bar", x="metric", y="score", hue="model").set(
     title="Bertweet vs topic model"
 )
-plt.show()
+plt.savefig(Path("data/result_graph.png"))
