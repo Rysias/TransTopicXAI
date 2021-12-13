@@ -9,6 +9,9 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import Pipeline
 
+# from bertopic import BERTopic
+# from explainlp.clearformer import Clearformer
+
 
 def load_latest_embeddings(dr: Path, settype="train"):
     emb_path = sorted(dr.glob(f"*topic_embs_{settype}_*.npy"))[-1]
@@ -29,12 +32,21 @@ def main(args):
     Y_train = load_target(DATA_DIR, settype="train")
     Y_test = load_target(DATA_DIR, settype="test")
 
+    # initializing topic model
+    # topic_model = BERTopic.load(args.topic_path)
+    # clearformer = Clearformer(topic_model)
+
     normalizer = MinMaxScaler()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
     model = LogisticRegression(solver="saga", penalty="l1")
     grid = {"logistic__C": np.logspace(-1, 5, 10)}  # l1 lasso
     pipeline = Pipeline(
-        steps=[("poly", poly), ("normalize", normalizer), ("logistic", model),],
+        steps=[
+            # ("topic-embed", clearformer),
+            ("poly", poly),
+            ("normalize", normalizer),
+            ("logistic", model),
+        ],
         verbose=True,
     )
     gridsearch = GridSearchCV(pipeline, param_grid=grid, cv=3, verbose=True, n_jobs=-1)
@@ -56,6 +68,12 @@ if __name__ == "__main__":
         type=str,
         help="Gives the path to the data directory",
         default="../../final_proj_dat",
+    )
+    my_parser.add_argument(
+        "--topic-path",
+        type=str,
+        help="Gives the path to the topic model",
+        default="../../final_proj_dat/topic_model",
     )
     args = my_parser.parse_args()
     main(args)
