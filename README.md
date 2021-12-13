@@ -21,5 +21,10 @@ The structure of the repo is very much under development. However as of now it l
 9. Create interview plots with `src/manual_pred.py`
 10. Create LIME plots with `src/BERT_lime.py`
 
+## TODO
+- Steps 4 + 5 may be removed if Clearformer is added as a pipeline-step (which may be difficult)
+    - This both greatly improves simplicity and removes data leakage in a nice way, however, it introduces significant computational overhead
+        - Some of this overhead can be alleviated in a hacky way
+
 Any feedback is much appreciated! 😁
 
