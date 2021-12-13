@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from io import StringIO
 from pathlib import Path
 from sklearn import metrics
 from sentence_transformers import SentenceTransformer
@@ -27,10 +28,10 @@ def evaluate_preds(
 
 
 EVAL_DICT = {
-    "accuracy": metrics.balanced_accuracy_score,
-    "f1pn": f1_pos_neg,
-    "precision": partial(metrics.precision_score, average="macro"),
-    "recall": partial(metrics.recall_score, average="macro"),
+    "Accuracy": metrics.accuracy_score,
+    "F1_PN": f1_pos_neg,
+    # "precision": partial(metrics.precision_score, average="macro"),
+    "AvgRec": partial(metrics.recall_score, average="macro"),
 }
 # Get time
 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -54,9 +55,11 @@ total_num = sum(p.numel() for p in model.parameters())
 
 # Saving results
 bert_df = pd.DataFrame(bert_results, index=[0]).assign(
-    model="bertweet", num_params=total_num
+    model="transentiment", num_params=total_num
 )
-topic_df = pd.DataFrame(topic_results, index=[1]).assign(model="topic", num_params=10)
+topic_df = pd.DataFrame(topic_results, index=[1]).assign(
+    model="topic-based", num_params=10
+)
 all_results = pd.concat((bert_df, topic_df,))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
 
@@ -70,3 +73,27 @@ sns.catplot(data=plot_results, kind="bar", x="metric", y="score", hue="model").s
     title="Bertweet vs topic model"
 )
 plt.savefig(Path("data/result_graph.png"))
+
+
+semeval_results = """
+1 DataStories 0.6811 0.6772 0.6515
+1 BB_twtr 0.6811 0.6851 0.6583
+3 LIA 0.6763 0.6743 0.6612
+4 Senti17 0.6744 0.6654 0.6524
+5 NNEMBs 0.6695 0.6585 0.6641
+6 Tweester 0.6596 0.6486 0.6486
+7 INGEOTEC 0.6497 0.6457 0.63311
+8 SiTAKA 0.6458 0.6289 0.6439
+"""
+
+semeval = pd.read_csv(
+    StringIO(semeval_results),
+    sep="\s",
+    header=None,
+    names=["rank", "model", "AvgRec", "F1_PN", "Accuracy"],
+)
+semeval.drop(columns="rank", inplace=True)
+
+semeval.append(all_results[semeval.columns]).sort_values(by="AvgRec", ascending=False)
+
+semeval
