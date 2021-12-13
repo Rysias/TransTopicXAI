@@ -51,7 +51,7 @@ def main(args):
     filtered_embeddings = embeddings[filter_idx, :]
     print(f"{filtered_embeddings.shape = }")
     print(f"{non_null_topics.shape = }")
-    X = np.hstack((non_null_topics.reshape(-1, 1), filtered_embeddings))
+    X = filtered_embeddings
     print(f"{X.shape = }")
     clearformer.fit(X)
     # Create train set embeddings

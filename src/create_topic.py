@@ -7,7 +7,11 @@ import pandas as pd
 import argparse
 from bertopic import BERTopic
 from sklearn.feature_extraction.text import CountVectorizer
-from cuml.manifold.umap import UMAP
+
+try:
+    from cuml.manifold.umap import UMAP
+except ModuleNotFoundError:
+    from umap import UMAP
 
 
 def load_docs(data_path: Union[str, Path], text_col="text") -> np.ndarray:
