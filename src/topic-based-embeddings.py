@@ -13,6 +13,11 @@ from sklearn.pipeline import Pipeline
 # from explainlp.clearformer import Clearformer
 
 
+def load_latest_topic_model(dr: Path):
+    topic_path = sorted(dr.glob(f"*topic_model"))[-1]
+    return BERTopic.load(topic_path)
+
+
 def load_latest_embeddings(dr: Path, settype="train"):
     emb_path = sorted(dr.glob(f"*topic_embs_{settype}_*.npy"))[-1]
     return np.load(emb_path)
@@ -33,7 +38,7 @@ def main(args):
     Y_test = load_target(DATA_DIR, settype="test")
 
     # initializing topic model
-    # topic_model = BERTopic.load(args.topic_path)
+    # topic_model = load_latest_topic_model(Path(args.topic_path))
     # clearformer = Clearformer(topic_model)
 
     normalizer = MinMaxScaler()
@@ -70,10 +75,10 @@ if __name__ == "__main__":
         default="../../final_proj_dat",
     )
     my_parser.add_argument(
-        "--topic-path",
+        "--topic-dir",
         type=str,
-        help="Gives the path to the topic model",
-        default="../../final_proj_dat/topic_model",
+        help="Gives the dir to the topic model",
+        default="../../final_proj_dat/",
     )
     args = my_parser.parse_args()
     main(args)
