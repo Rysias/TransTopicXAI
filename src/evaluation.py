@@ -27,6 +27,10 @@ def evaluate_preds(
     return {metric: func(y_true, y_pred) for metric, func in eval_dict.items()}
 
 
+def get_latest_preds(pattern: str) -> pd.DataFrame:
+    return sorted(OUTPUT_DIR.glob(f"*{pattern}_preds*.csv"))[-1]
+
+
 EVAL_DICT = {
     "Accuracy": metrics.accuracy_score,
     "F1_PN": f1_pos_neg,
@@ -37,9 +41,12 @@ EVAL_DICT = {
 current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 # Evaluating my model
-latest_pred_path = sorted(OUTPUT_DIR.glob("*topic_preds_*.csv"))[-1]
+latest_pred_path = get_latest_preds("topic")
 topic_preds = pd.read_csv(latest_pred_path)
 
+# Evaluating tf-idf
+latest_tfidf = get_latest_preds("tf_idf")
+tfidf_preds = pd.read_csv(latest_tfidf)
 # Evaluating sentiment on same data!
 big_preds = pd.read_csv(OUTPUT_DIR / "bertweet_preds.csv")
 
@@ -47,6 +54,8 @@ print("Evaluation of topic model")
 topic_results = evaluate_preds(topic_preds["y_true"], topic_preds["y_pred"], EVAL_DICT)
 print("Evaluation of big model")
 bert_results = evaluate_preds(big_preds["y_true"], big_preds["y_pred"], EVAL_DICT)
+print("Evaluation of tfidf")
+tfidf_results = evaluate_preds(tfidf_preds["y_true"], tfidf_preds["y_pred"], EVAL_DICT)
 
 
 # Count number of parameters
@@ -60,7 +69,10 @@ bert_df = pd.DataFrame(bert_results, index=[0]).assign(
 topic_df = pd.DataFrame(topic_results, index=[1]).assign(
     model="topic-based", num_params=10
 )
-all_results = pd.concat((bert_df, topic_df,))
+tfidf_df = pd.DataFrame(tfidf_results, index=[2]).assign(
+    model="tf-idf", num_params=2000
+)
+all_results = pd.concat((bert_df, topic_df, tfidf_df))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
 
 
