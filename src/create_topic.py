@@ -67,11 +67,11 @@ def main(args):
     print("fittin model...")
     topics, probs = topic_model.fit_transform(small_docs, small_embs)
     print("savin data...")
-    preds_df = pd.DataFrame(
-        list(zip(topics, probs, small_docs)), columns=["topic", "prob", "doc"]
-    )
-    preds_df.to_csv(Path(args.save_path) / f"{time_stamp}_doc_topics.csv", index=False)
-    np.save(Path(args.save_path) / f"{time_stamp}_small_embs.npy", small_embs)
+    # preds_df = pd.DataFrame(
+    #    list(zip(topics, probs, small_docs)), columns=["topic", "prob", "doc"]
+    # )
+    # preds_df.to_csv(Path(args.save_path) / f"{time_stamp}_doc_topics.csv", index=False)
+    # np.save(Path(args.save_path) / f"{time_stamp}_small_embs.npy", small_embs)
     print("savin model...")
     topic_model.save(
         str((Path(args.save_path) / f"{time_stamp}_topic_model")),
@@ -83,16 +83,16 @@ def main(args):
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
     my_parser.add_argument(
-        "--data_path", type=str, help="Gives the path to the data file (a csv)"
+        "--data-path", type=str, help="Gives the path to the data file (a csv)"
     )
     my_parser.add_argument(
-        "--embedding_path", type=str, help="Gives the path to the embeddings (.npy)",
+        "--embedding-path", type=str, help="Gives the path to the embeddings (.npy)",
     )
     my_parser.add_argument(
-        "--save_path", type=str, help="Path to directory to save stuff",
+        "--save-path", type=str, help="Path to directory to save stuff",
     )
     my_parser.add_argument(
-        "--data_size",
+        "--data-size",
         type=float,
         help="Size of the data to use (100k seems to be a hard limit)",
     )
