@@ -76,11 +76,11 @@ def main(args):
 if __name__ == "__main__":
     my_parser = argparse.ArgumentParser(description="Embed Documents")
     my_parser.add_argument(
-        "--data_path", type=str, help="Gives the path to the data file (a csv)"
+        "--data-path", type=str, help="Gives the path to the data file (a csv)"
     )
     my_parser.add_argument(
         "-emb",
-        "--embedding_path",
+        "--embedding-path",
         type=str,
         required=False,
         help="Gives the directory where to save embeddings",
