@@ -38,7 +38,7 @@ def main(args):
     X_test = all_embs[Y_test.index.values, :]
 
     # initializing topic model
-    topic_model = load_latest_topic_model(Path(args.topic_path))
+    topic_model = load_latest_topic_model(Path(args.topic_dir))
     clearformer = Clearformer(topic_model)
 
     normalizer = MinMaxScaler()
