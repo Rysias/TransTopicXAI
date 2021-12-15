@@ -2,8 +2,6 @@ from datetime import datetime
 from typing import Dict, Union, Callable
 import pandas as pd
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from io import StringIO
 from pathlib import Path
 from sklearn import metrics
@@ -74,17 +72,6 @@ tfidf_df = pd.DataFrame(tfidf_results, index=[2]).assign(
 )
 all_results = pd.concat((bert_df, topic_df, tfidf_df))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
-
-
-# Plotting #
-sns.set_theme(style="whitegrid")
-plot_results = pd.melt(
-    all_results, id_vars=["model", "num_params"], var_name="metric", value_name="score"
-)
-sns.catplot(data=plot_results, kind="bar", x="metric", y="score", hue="model").set(
-    title="Bertweet vs topic model"
-)
-plt.savefig(Path("data/result_graph.png"))
 
 
 semeval_results = """
