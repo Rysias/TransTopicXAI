@@ -23,7 +23,7 @@ cd clearformers
 pip install .
 echo "done!"
 echo 'Training topic-model'
-cd ../TransTopciXAI/src
+cd ../TransTopicXAI/src
 python create_topic.py --data-path "../data/tweeteval_text.csv" --embedding-path "../data/bertweet-base-sentiment-analysis_embs.npy" --data-size 45000 --save-path "../models"
 echo 'done!'
 echo 'Training topic-based embeddings'
