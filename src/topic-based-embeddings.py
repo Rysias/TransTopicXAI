@@ -9,8 +9,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import Pipeline
 
-# from bertopic import BERTopic
-# from explainlp.clearformer import Clearformer
+from bertopic import BERTopic
+from explainlp.clearformer import Clearformer
 
 
 def load_latest_topic_model(dr: Path):
@@ -38,8 +38,8 @@ def main(args):
     Y_test = load_target(DATA_DIR, settype="test")
 
     # initializing topic model
-    # topic_model = load_latest_topic_model(Path(args.topic_path))
-    # clearformer = Clearformer(topic_model)
+    topic_model = load_latest_topic_model(Path(args.topic_path))
+    clearformer = Clearformer(topic_model)
 
     normalizer = MinMaxScaler()
     poly = PolynomialFeatures(interaction_only=True, include_bias=True)
@@ -47,7 +47,7 @@ def main(args):
     grid = {"logistic__C": np.logspace(-1, 5, 10)}  # l1 lasso
     pipeline = Pipeline(
         steps=[
-            # ("topic-embed", clearformer),
+            ("topic-embed", clearformer),
             ("poly", poly),
             ("normalize", normalizer),
             ("logistic", model),
