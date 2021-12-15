@@ -18,24 +18,24 @@ def load_latest_topic_model(dr: Path):
     return BERTopic.load(topic_path)
 
 
-def load_latest_embeddings(dr: Path, settype="train"):
-    emb_path = sorted(dr.glob(f"*topic_embs_{settype}_*.npy"))[-1]
-    return np.load(emb_path)
+def load_embeddings(dr: Path) -> np.ndarray:
+    return np.load(dr / "bertweet-base-sentiment-analysis_embs.npy")
 
 
 def load_target(dr: Path, settype="train"):
     target_path = dr / f"tweeteval_{settype}.csv"
-    return pd.read_csv(target_path)["label"].values
+    return pd.read_csv(target_path)["label"]
 
 
 def main(args):
     current_time = datetime.now().strftime("%y%m%d%H")
     DATA_DIR = Path(args.data_dir)
 
-    X_train = load_latest_embeddings(DATA_DIR, settype="train")
-    X_test = load_latest_embeddings(DATA_DIR, settype="test")
+    all_embs = load_embeddings(DATA_DIR)
     Y_train = load_target(DATA_DIR, settype="train")
     Y_test = load_target(DATA_DIR, settype="test")
+    X_train = all_embs[Y_train.index.values, :]
+    X_test = all_embs[Y_test.index.values, :]
 
     # initializing topic model
     topic_model = load_latest_topic_model(Path(args.topic_path))
