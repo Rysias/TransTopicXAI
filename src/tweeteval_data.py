@@ -2,8 +2,8 @@ import pandas as pd
 from pathlib import Path
 from typing import List, Union
 
-DATA_DIR = Path("../tweeteval/datasets")
-SAVE_DIR = Path("data/explains")
+DATA_DIR = Path("../../tweeteval/datasets")
+SAVE_DIR = Path("../data/explains")
 
 
 def scan_sentiment(file: Path) -> List[Union[None, int]]:
@@ -41,22 +41,21 @@ all_labels = []
 for file in DATA_DIR.rglob("*_labels.txt"):
     all_labels.extend(scan_sentiment(file))
 
-set(all_labels)
 
 df = pd.DataFrame({"text": all_text, "label": all_labels, "type": all_types})
 df = df.assign(
     text=df["text"].str.strip(), label=df["label"].str.extract("(\d)").astype(float)
 )
 
-df["text"].to_csv(Path("data/tweeteval_text.csv"))
+df["text"].to_csv(Path("../data/tweeteval_text.csv"))
 
 
 sent_df = df.dropna()
 
 test_df = sent_df[sent_df["type"] == "test"].drop(columns="type")
-test_df.to_csv(Path("data/tweeteval_test.csv"))
+test_df.to_csv(Path("../data/tweeteval_test.csv"))
 train_df = sent_df[sent_df["type"] != "test"].drop(columns="type")
-train_df.to_csv(Path("data/tweeteval_train.csv"))
+train_df.to_csv(Path("../data/tweeteval_train.csv"))
 
 
 explain_test = test_df.sample(10, random_state=42)
