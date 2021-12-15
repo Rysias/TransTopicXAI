@@ -27,7 +27,7 @@ cd ../TransTopicXAI/src
 python create_topic.py --data-path "../data/tweeteval_text.csv" --embedding-path "../data/bertweet-base-sentiment-analysis_embs.npy" --data-size 40000 --save-path "../models"
 echo 'done!'
 echo 'Training topic-based embeddings'
-python topic-based-embeddings.py --data-dir "../data" --topic-path "../models"
+python topic-based-embeddings.py --data-dir "../data" --topic-dir "../models"
 echo 'done!'
 echo "run evaluations..."
 python evaluation.py
