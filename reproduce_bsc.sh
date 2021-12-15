@@ -1,6 +1,6 @@
 eval "$(conda shell.bash hook)"
 echo 'Setting up embedding environment...'
-conda env create -f embenv.yml
+conda env create -f embenv.yml || conda activate embenv
 echo 'setting up twitter data'
 cd ..
 git clone https://github.com/cardiffnlp/tweeteval.git
