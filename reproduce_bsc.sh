@@ -14,9 +14,10 @@ python embed_documents_df.py --data-path "../data/tweeteval_text.csv" --embeddin
 conda deactivate
 echo 'done embedding data!'
 echo 'Setting up topic-model environment'
+cd ..
 conda env create -f topicmodel.yml
 conda activate rapids-21.12
-cd ../..
+cd ..
 git clone https://github.com/Rysias/clearformers.git
 cd clearformers 
 pip install .
