@@ -10,7 +10,7 @@ cd src
 conda activate embenv
 python tweeteval_data.py
 echo 'embedding data'
-python embed_documents_df.py --data-path "data/tweeteval_text.csv" --embedding-path "data/"
+python embed_documents_df.py --data-path "../data/tweeteval_text.csv" --embedding-path "../data/"
 conda deactivate
 echo 'done embedding data!'
 echo 'Setting up topic-model environment'
