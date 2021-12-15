@@ -4,7 +4,7 @@ conda env create -f embenv.yml
 echo 'setting up twitter data'
 cd ..
 git clone https://github.com/cardiffnlp/tweeteval.git
-cd TransTopciXAI
+cd TransTopicXAI
 mkdir data models data/explains
 cd src
 conda activate embenv
