@@ -20,6 +20,7 @@ conda activate rapids-21.12
 cd ..
 git clone https://github.com/Rysias/clearformers.git
 cd clearformers 
+git pull
 pip install .
 echo "done!"
 echo 'Training topic-model'
