@@ -9,7 +9,7 @@ from sentence_transformers import SentenceTransformer
 from functools import partial
 from numpy.typing import ArrayLike
 
-OUTPUT_DIR = Path("data")
+OUTPUT_DIR = Path("../data")
 
 
 def f1_pos_neg(y_true: ArrayLike, y_pred: ArrayLike):
@@ -93,6 +93,8 @@ semeval = pd.read_csv(
 )
 semeval.drop(columns="rank", inplace=True)
 
-semeval.append(all_results[semeval.columns]).sort_values(by="AvgRec", ascending=False)
+final_results = semeval.append(all_results[semeval.columns]).sort_values(
+    by="AvgRec", ascending=False
+)
+print(final_results)
 
-semeval
