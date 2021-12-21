@@ -8,7 +8,6 @@ cd TransTopicXAI
 mkdir data models data/explains
 cd src
 conda activate embenv
-pip install pysentimiento
 python tweeteval_data.py
 echo 'embedding data'
 python embed_documents_df.py --data-path "../data/tweeteval_text.csv" --embedding-path "../data/" --lazy
