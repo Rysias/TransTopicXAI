@@ -6,6 +6,8 @@ from contextlib import redirect_stdout
 
 from typing import Dict, Tuple, List
 
+# TODO: latest full topics doesn't exist, so I have to make sure that it is written somehow.
+
 DATA_DIR = Path("../data")
 
 

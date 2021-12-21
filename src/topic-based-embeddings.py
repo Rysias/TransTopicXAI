@@ -43,6 +43,7 @@ def main(args):
     Y_train = load_target(DATA_DIR, settype="train")
     Y_test = load_target(DATA_DIR, settype="test")
     X_train_raw = all_embs[Y_train.index.values, :]
+    logging.debug(f"{X_train_raw.shape = }")
     X_test_raw = all_embs[Y_test.index.values, :]
     logging.info("Finished loading data!")
 
@@ -52,6 +53,7 @@ def main(args):
     clearformer = Clearformer(topic_model)
 
     # Creating topic embeddings
+    # TODO: Fix weird bug here!
     X_train = clearformer.fit_transform(X_train_raw)
     X_test = clearformer.fit_transform(X_test_raw)
     logging.info("Done with topic embeddings!")
