@@ -20,8 +20,7 @@ def load_docs(data_path: Union[str, Path], text_col="text") -> np.ndarray:
 
 
 def load_embeds(embed_path: Union[str, Path]):
-    raw_embeds = np.load(embed_path)
-    return raw_embeds[:, 1:]
+    return np.load(embed_path)
 
 
 def get_random_idx(
