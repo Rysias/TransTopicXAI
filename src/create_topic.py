@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from typing import Union
-
+import logging
 import numpy as np
 import pandas as pd
 import argparse
@@ -41,7 +41,12 @@ def test_idx_filter(data_path: str, docs_size: int) -> np.array:
 
 
 def main(args):
-    print("loadin data...")
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%d-%m-%Y:%H:%M:%S",
+    )
+    logging.info("loadin data...")
     all_docs = load_docs(args.data_path)
     all_embeddings = load_embeds(args.embedding_path)
     test_filter = test_idx_filter(args.data_path, docs_size=all_docs.shape[0])
@@ -52,7 +57,8 @@ def main(args):
     sample_idx = get_random_idx(docs, sample_size=args.data_size)
     small_docs = docs[sample_idx]
     small_embs = embeddings[sample_idx, :]
-    print("bootin model...")
+    logging.info("shape of data: %s", small_embs.shape)
+    logging.info("bootin model...")
     vectorizer_model = CountVectorizer(ngram_range=(1, 2), stop_words="english",)
     umap_model = UMAP(n_neighbors=15, n_components=50, min_dist=0.0)
 
@@ -64,20 +70,14 @@ def main(args):
         calculate_probabilities=False,
         nr_topics=10,
     )
-    print("fittin model...")
+    logging.info("fittin model...")
     topics, probs = topic_model.fit_transform(small_docs, small_embs)
-    print("savin data...")
-    # preds_df = pd.DataFrame(
-    #    list(zip(topics, probs, small_docs)), columns=["topic", "prob", "doc"]
-    # )
-    # preds_df.to_csv(Path(args.save_path) / f"{time_stamp}_doc_topics.csv", index=False)
-    # np.save(Path(args.save_path) / f"{time_stamp}_small_embs.npy", small_embs)
-    print("savin model...")
+    logging.info("savin model...")
     topic_model.save(
         str((Path(args.save_path) / f"{time_stamp}_topic_model")),
         save_embedding_model=False,
     )
-    print("all done!")
+    logging.info("all done!")
 
 
 if __name__ == "__main__":
