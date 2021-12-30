@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Union
+import pickle
+from typing import Any, Union
 import logging
 import numpy as np
 import pandas as pd
@@ -37,6 +38,11 @@ def test_idx_filter(data_path: str, docs_size: int) -> np.array:
     index_path = Path(data_path).parent / "tweeteval_test.csv"
     test_idx = pd.read_csv(index_path, index_col=0).index.values
     return ~np.isin(np.arange(docs_size), test_idx)
+
+
+def write_pickle(obj: Any, path: Path):
+    with open(path, "wb") as f:
+        pickle.dump(obj, f)
 
 
 def main(args):
@@ -76,6 +82,11 @@ def main(args):
         str((Path(args.save_path) / f"{time_stamp}_topic_model")),
         save_embedding_model=False,
     )
+    logging.info("write topics")
+    write_pickle(
+        topic_model.get_topics(), Path(args.save_path) / "tweeteval_topic_dict.pkl"
+    )
+    logging.info("done!")
     logging.info("all done!")
 
 
