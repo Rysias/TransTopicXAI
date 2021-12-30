@@ -1,3 +1,8 @@
+"""
+Trains topic model on pseudo-random subset of the training data
+NB: HDBSCAN breaks with more than ~40k documents, so keep it below that
+Writes the topic model as a file as well as the topic words from the c-TF-IDF to a pickle
+"""
 from datetime import datetime
 from pathlib import Path
 import pickle

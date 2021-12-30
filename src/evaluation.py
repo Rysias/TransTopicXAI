@@ -1,3 +1,7 @@
+""" 
+Calculates all relevant metrics for the transentiment and topic-based models
+Saves to .csv and prints togehter with results from SemEval2017
+"""
 from datetime import datetime
 from typing import Dict, Union, Callable
 import pandas as pd
@@ -65,6 +69,9 @@ topic_df = pd.DataFrame(topic_results, index=[1]).assign(
 all_results = pd.concat((bert_df, topic_df))
 all_results.to_csv(OUTPUT_DIR / f"comparison_results_{current_time}.csv")
 
+############################
+# Compare with SemEval2017 #
+############################
 
 semeval_results = """
 1 DataStories 0.6811 0.6772 0.6515

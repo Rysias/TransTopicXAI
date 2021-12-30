@@ -1,6 +1,7 @@
 """
 Pipeline for embedding documents. 
 This is for making the documents ready for BERTopic 
+Outputs a .npy file
 """
 import numpy as np
 import pandas as pd

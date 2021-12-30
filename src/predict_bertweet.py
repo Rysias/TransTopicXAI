@@ -1,3 +1,7 @@
+"""
+Runs predictions for transentiment (pysentimiento)
+Outputs a csv with predictions to be used in evaluation.py
+"""
 import pandas as pd
 import sys
 from argparse import ArgumentParser

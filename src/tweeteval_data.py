@@ -1,3 +1,7 @@
+"""
+Formats data from TweetEval and SemEval into suitable csvs. 
+Both for creating a train-set, a test-set, topic-model set and manual examples
+"""
 import pandas as pd
 from pathlib import Path
 from typing import List, Union

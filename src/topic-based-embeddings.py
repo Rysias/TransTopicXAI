@@ -1,3 +1,6 @@
+"""
+Fits the topic-based classifier (including creating topic embeddings)
+"""
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -55,7 +58,9 @@ def main(args):
     # creating full_docs stuff
     logging.info("writing topics to file")
     full_doc_topic_path = DATA_DIR / f"full_doc_topics_{current_time}.csv"
-    random_docs = ["i" for _ in range(X_train_raw.shape[0])]
+    random_docs = [
+        "i" for _ in range(X_train_raw.shape[0])
+    ]  # Stupid hack as bertopic doesn't actually use documents for transform but requires it as an argument
     topics, _ = topic_model.transform(random_docs, X_train_raw)
     full_doc_topic = pd.DataFrame({"topic": topics}, index=Y_train.index)
     full_doc_topic.to_csv(full_doc_topic_path)
