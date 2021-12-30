@@ -52,8 +52,16 @@ def main(args):
     topic_model = load_latest_topic_model(Path(args.topic_dir))
     clearformer = Clearformer(topic_model)
 
+    # creating full_docs stuff
+    logging.info("writing topics to file")
+    full_doc_topic_path = DATA_DIR / f"full_doc_topics_{current_time}.csv"
+    random_docs = ["i" for _ in range(X_train_raw.shape[0])]
+    topics, _ = topic_model.transform(random_docs, X_train_raw)
+    full_doc_topic = pd.DataFrame({"topic": topics}, index=Y_train.index)
+    full_doc_topic.to_csv(full_doc_topic_path)
+    logging.info("done")
+
     # Creating topic embeddings
-    # TODO: Fix weird bug here!
     X_train = clearformer.fit_transform(X_train_raw)
     X_test = clearformer.transform(X_test_raw)
     logging.info("Done with topic embeddings!")
