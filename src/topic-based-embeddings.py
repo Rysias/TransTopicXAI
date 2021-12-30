@@ -55,7 +55,7 @@ def main(args):
     # Creating topic embeddings
     # TODO: Fix weird bug here!
     X_train = clearformer.fit_transform(X_train_raw)
-    X_test = clearformer.fit_transform(X_test_raw)
+    X_test = clearformer.transform(X_test_raw)
     logging.info("Done with topic embeddings!")
 
     logging.info("Commencing training...")
