@@ -83,9 +83,7 @@ def main(args):
         save_embedding_model=False,
     )
     logging.info("write topics")
-    write_pickle(
-        topic_model.get_topics(), Path(args.save_path) / "tweeteval_topic_dict.pkl"
-    )
+    write_pickle(topic_model.get_topics(), Path("../data/tweeteval_topic_dict.pkl"))
     logging.info("done!")
     logging.info("all done!")
 
