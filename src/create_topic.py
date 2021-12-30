@@ -56,7 +56,7 @@ def main(args):
     sample_idx = get_random_idx(docs, sample_size=args.data_size)
     small_docs = docs[sample_idx]
     small_embs = embeddings[sample_idx, :]
-    logging.info("shape of data: %s", small_embs.shape)
+    logging.debug("shape of data: %s", small_embs.shape)
     logging.info("bootin model...")
     vectorizer_model = CountVectorizer(ngram_range=(1, 2), stop_words="english",)
     umap_model = UMAP(n_neighbors=15, n_components=50, min_dist=0.0)
