@@ -43,7 +43,7 @@ def main(args):
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s %(levelname)-8s %(message)s",
-        datefmt="%d-%m-%Y:%H:%M:%S",
+        datefmt="%Y-%m-%d:%H:%M:%S",
     )
     logging.info("loadin data...")
     all_docs = load_docs(args.data_path)
