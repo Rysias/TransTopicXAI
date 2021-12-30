@@ -9,22 +9,17 @@ Many AI-solutions ultimately end up as decision support for non-technical end us
 
 ## How to reproduce the results
 The structure of the repo is very much under development. However as of now it looks something like this: 
-0. Set up the correct environment(s) (TODO)
+0. Set up the correct environment(s) - see `embenv.yml` and `topicmodel.yml`
 1. Create the data using `src/tweeteval_data.py` (This requires, you have cloned the [tweeval repo](https://github.com/cardiffnlp/tweeteval/))
-2. Create embeddings for the full data using `src/embed_document_df` (requires you to have some specific folders for saving stuff; TODO)
-3. Fit the topic model using `src/create_topic.py` (also requires certain folders; TODO)
-4. Transform the training set corpus with `src/transform_topics.py`
-5. Create topic-embeddings using `src/create_topic_embeds.py`
-6. Train classifier with `src/fit_explainlp.py`
-7. Get pysentimiento prediction with `src/predict_bertweet.py`
-8. Evaluate with `src/evaluation.py`
-9. Create interview plots with `src/manual_pred.py`
-10. Create LIME plots with `src/BERT_lime.py`
+2. Create embeddings for the full data using `src/embed_document_df` (requires following folders: models and data)
+3. Fit the topic model using `src/create_topic.py` 
+4. Train topic-based model with `src/topic-based-embeddings.py`
+5. Get pysentimiento prediction with `src/predict_bertweet.py`
+6. Evaluate with `src/evaluation.py`
+7. Create interview plots with `src/manual_pred.py`
+8. Create LIME plots with `src/BERT_lime.py`
 
-## TODO
-- Steps 4 + 5 may be removed if Clearformer is added as a pipeline-step (which may be difficult)
-    - This both greatly improves simplicity and removes data leakage in a nice way, however, it introduces significant computational overhead
-        - Some of this overhead can be alleviated in a hacky way
+all of this can be accomplished by running `reproduce_bsc.sh` with conda installed. 
 
 Any feedback is much appreciated! 😁
 
