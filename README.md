@@ -19,7 +19,7 @@ The structure of the repo is very much under development. However as of now it l
 7. Create interview plots with `src/manual_pred.py`
 8. Create LIME plots with `src/BERT_lime.py`
 
-all of this can be accomplished by running `reproduce_bsc.sh` with conda installed. 
+all of this can be accomplished by running `reproduce_bsc.sh` with conda installed (except for the last two steps as of now)
 
 Any feedback is much appreciated! 😁
 
