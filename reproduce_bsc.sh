@@ -29,11 +29,11 @@ echo 'Training topic-model'
 cd ../TransTopicXAI/src
 python create_topic.py --data-path "../data/tweeteval_text.csv" --embedding-path "../data/bertweet-base-sentiment-analysis_embs.npy" --data-size 40000 --save-path "../models"
 echo 'done!'
-echo 'Creating topic info file'
-python get_topic_info.py
-echo 'done!'
 echo 'Training topic-based embeddings'
 python topic-based-embeddings.py --data-dir "../data" --topic-dir "../models"
+echo 'done!'
+echo 'Creating topic info file'
+python get_topic_info.py
 echo 'done!'
 echo "run evaluations..."
 python evaluation.py
