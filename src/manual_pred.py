@@ -11,9 +11,8 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-DATA_DIR = Path("../ExplainlpTwitter/output")
-NEW_DATA_DIR = Path("data/")
-MODEL_DIR = Path("models")
+NEW_DATA_DIR = Path("../data/")
+MODEL_DIR = Path("../models")
 SAVE_DIR = NEW_DATA_DIR / "explains"
 # Names to topic (manually)
 
