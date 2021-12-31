@@ -3,6 +3,7 @@ import joblib
 import pandas as pd
 import numpy as np
 import json
+import logging
 import re
 import matplotlib.pyplot as plt
 
@@ -109,6 +110,11 @@ def read_json(file_path: Path):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%Y-%m-%d:%H:%M:%S",
+    )
     TOPIC_NAMES = {int(k): v for k, v in read_json("tweeteval_cats.json").items()}
 
     # DATA
@@ -130,7 +136,7 @@ if __name__ == "__main__":
         test_emb = test_embs[test_idx, :]
         tweet_idx = test_tweets.index[test_idx]
         tweet_text = test_tweets.loc[tweet_idx, "text"]
-        print(f"{tweet_text = }")
+        logging.debug(f"{tweet_text = }")
         fig = explain_tweet(test_emb, model_path, n=10)
         if not do_save:
             plt.show()
@@ -156,5 +162,5 @@ if __name__ == "__main__":
         plt.subplots_adjust(left=0.45, hspace=0)
         plt.rc("ytick", labelsize=15)
         plt.title(f"Global Coefficients: {label}")
-        # plt.savefig(SAVE_DIR / f"global_features_{label}.png")
-        plt.show()
+        plt.savefig(SAVE_DIR / f"global_features_{label}.png")
+        # plt.show()

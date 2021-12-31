@@ -69,6 +69,7 @@ def main(args):
     # Creating topic embeddings
     X_train = clearformer.fit_transform(X_train_raw)
     X_test = clearformer.transform(X_test_raw)
+    np.save(DATA_DIR / f"topic_embs_test_{current_time}.npy", X_test)
     logging.info("Done with topic embeddings!")
 
     logging.info("Commencing training...")
