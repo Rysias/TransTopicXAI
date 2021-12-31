@@ -36,13 +36,13 @@ def write_tweet(tweet: str, idx: int, dr: Path):
 
 all_text = []
 all_types = []
-for file in DATA_DIR.rglob("*_text.txt"):
+for file in sorted(DATA_DIR.rglob("*_text.txt")):
     all_text.extend(read_file(file))
     all_types.extend(scan_type(file))
 
 
 all_labels = []
-for file in DATA_DIR.rglob("*_labels.txt"):
+for file in sorted(DATA_DIR.rglob("*_labels.txt")):
     all_labels.extend(scan_sentiment(file))
 
 
