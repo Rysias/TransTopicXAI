@@ -1,14 +1,16 @@
+"""
+Creates LIME graphs + raw predictions
+"""
 from typing import Dict, List, Union
 import pandas as pd
 import argparse
 import numpy as np
+import json
 import matplotlib.pyplot as plt
 from pathlib import Path
 from pysentimiento import create_analyzer
 from lime.lime_text import LimeTextExplainer
 from pysentimiento.analyzer import AnalyzerOutput
-
-DATA_DIR = Path("data/")
 
 
 def sort_sentiment(res: AnalyzerOutput) -> np.array:
@@ -51,10 +53,22 @@ def pred_loop(df: pd.DataFrame, explainer: LimeTextExplainer):
         plt.savefig(DATA_DIR / f"bertplot_{i}.png")
 
 
+def write_preds(df: pd.DataFrame):
+    preds = SENTIMENT.predict(df["text"].tolist())
+    pred_list = [{pred.output: max(pred.probas.values())} for pred in preds]
+    for tweet_id, pred_dict in zip(df.index, pred_list):
+        with open(DATA_DIR / f"bertpred_{tweet_id}.json", "w") as f:
+            json.dump(pred_dict, f)
+
+
 def main():
     explainer = LimeTextExplainer(class_names=LABELS)
     # Test on data
     df = pd.read_csv(DATA_DIR / "bert_test.csv", index_col=0)
+
+    # Create txts with predictions
+    write_preds(df)
+
     # Pred and Plot stuff
     pred_loop(df, explainer)
 
