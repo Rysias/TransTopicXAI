@@ -18,7 +18,7 @@ echo 'done embedding data!'
 echo 'Setting up topic-model environment'
 cd ..
 conda env create -f topicmodel.yml
-conda activate rapids-21.12 
+conda activate topicenv
 cd ..
 git clone https://github.com/Rysias/clearformers.git
 cd clearformers 
@@ -37,4 +37,7 @@ python get_topic_info.py
 echo 'done!'
 echo "run evaluations..."
 python evaluation.py
-
+echo "done!"
+echo "creating explanations"
+python BERT_lime.py --data-dir "../data/explains"
+python manual_pred.py
