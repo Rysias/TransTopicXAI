@@ -51,7 +51,7 @@ df = df.assign(
     text=df["text"].str.strip(), label=df["label"].str.extract("(\d)").astype(float)
 )
 
-df["text"].to_csv(Path("../data/tweeteval_text.csv"))
+df["text"].dropna().to_csv(Path("../data/tweeteval_text.csv"))
 
 
 sent_df = df.dropna()
