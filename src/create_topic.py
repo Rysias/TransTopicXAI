@@ -22,7 +22,7 @@ except ModuleNotFoundError:
 
 def load_docs(data_path: Union[str, Path], text_col="text") -> np.ndarray:
     df = pd.read_csv(Path(data_path))
-    return df[text_col].values
+    return df[text_col]
 
 
 def load_embeds(embed_path: Union[str, Path]):
@@ -62,8 +62,8 @@ def main(args):
     test_filter = test_idx_filter(args.data_path, docs_size=all_docs.shape[0])
     docs = all_docs[test_filter]
     embeddings = all_embeddings[test_filter, :]
-    na_filter = ~np.isnan(docs)
-    docs = docs[na_filter]
+    na_filter = ~docs.isna()
+    docs = docs[na_filter].values
     embeddings = embeddings[na_filter, :]
     time_stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     np.random.seed(0)
