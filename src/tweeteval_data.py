@@ -50,8 +50,8 @@ df = pd.DataFrame({"text": all_text, "label": all_labels, "type": all_types})
 df = df.assign(
     text=df["text"].str.strip(), label=df["label"].str.extract("(\d)").astype(float)
 )
-
-df["text"].dropna().to_csv(Path("../data/tweeteval_text.csv"))
+df = df[~df["text"].isna()]
+df["text"].to_csv(Path("../data/tweeteval_text.csv"))
 
 
 sent_df = df.dropna()
