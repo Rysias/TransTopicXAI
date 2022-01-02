@@ -51,6 +51,7 @@ df = df.assign(
     text=df["text"].str.strip(), label=df["label"].str.extract("(\d)").astype(float)
 )
 df = df[~df["text"].isna()]
+assert df["text"].isna().sum() == 0
 df["text"].to_csv(Path("../data/tweeteval_text.csv"))
 
 
